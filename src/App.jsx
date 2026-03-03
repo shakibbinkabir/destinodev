@@ -9,6 +9,7 @@ import SingleCarPage from './pages/SingleCarPage';
 import AboutPage from './pages/AboutPage';
 import ContactPage from './pages/ContactPage';
 import DeliveredPage from './pages/DeliveredPage';
+import AuctionPage from './pages/AuctionPage';
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -31,6 +32,7 @@ export default function App() {
           <Route path="/about" element={<AboutPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/delivered" element={<DeliveredPage />} />
+          <Route path="/auction" element={<AuctionPage />} />
         </Routes>
       </main>
       <Footer />

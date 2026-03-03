@@ -1,7 +1,7 @@
 .single-car-page__breadcrumb {
   background-color: var(--primary);
   padding: var(--space-md) 0;
-  margin-top: var(--header-height);
+  margin-top: var(--header-total);
 }
 
 .single-car-page__breadcrumb-nav {

@@ -54,7 +54,7 @@ export default function HomePage() {
 
   return (
     <div className="home-page">
-      <section className="hero" style={{ marginTop: 'var(--header-height)' }}>
+      <section className="hero" style={{ marginTop: 'var(--header-total)' }}>
         <div className="hero__slides">
           {heroImages.map((img, idx) => (
             <div

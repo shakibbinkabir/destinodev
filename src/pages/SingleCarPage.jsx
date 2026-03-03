@@ -28,7 +28,7 @@ export default function SingleCarPage() {
 
   if (!car) {
     return (
-      <div className="single-car-page" style={{ marginTop: 'var(--header-height)' }}>
+      <div className="single-car-page" style={{ marginTop: 'var(--header-total)' }}>
         <div className="wrap section text-center">
           <h2>Vehicle Not Found</h2>
           <p style={{ marginTop: 8, color: '#777', fontWeight: 300 }}>

@@ -1,0 +1,98 @@
+.exchange-rate--compact {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background-color: var(--light);
+  border: 1px solid var(--border);
+}
+
+.exchange-rate__icon {
+  color: var(--cyan);
+}
+
+.exchange-rate--compact .exchange-rate__value {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--black);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.exchange-rate__loading,
+.exchange-rate__error {
+  font-size: 11px;
+  font-weight: 400;
+  color: #999;
+}
+
+/* Full variant */
+.exchange-rate--full {
+  border: 1px solid var(--border);
+  background-color: var(--white);
+}
+
+.exchange-rate__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--border);
+}
+
+.exchange-rate__header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  color: var(--primary);
+}
+
+.exchange-rate__title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--black);
+}
+
+.exchange-rate__refresh {
+  color: #999;
+  padding: 4px;
+  transition: color var(--transition);
+}
+
+.exchange-rate__refresh:hover {
+  color: var(--primary);
+}
+
+.exchange-rate__rates {
+  padding: var(--space-md);
+}
+
+.exchange-rate__rate-row {
+  display: flex;
+  align-items: center;
+}
+
+.exchange-rate__rate-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.exchange-rate__footer {
+  padding: var(--space-sm) var(--space-md);
+  border-top: 1px solid var(--border);
+  background-color: var(--light);
+}
+
+.exchange-rate__source {
+  font-size: 10px;
+  font-weight: 400;
+  color: #999;
+}
+
+@media (max-width: 1024px) {
+  .exchange-rate--compact {
+    display: none;
+  }
+}

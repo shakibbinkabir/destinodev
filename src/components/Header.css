@@ -1,6 +1,85 @@
-.header {
+/* Top bar */
+.header-topbar {
   position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
+  height: var(--topbar-height, 40px);
+  background-color: var(--deep);
+  z-index: 1001;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.header-topbar__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.header-topbar__left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.header-topbar__left .japan-clock {
+  background-color: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.header-topbar__left .japan-clock__label {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.header-topbar__left .japan-clock__time {
+  color: var(--white);
+}
+
+.header-topbar__left .japan-clock__icon {
+  color: var(--cyan);
+}
+
+.header-topbar__left .japan-clock__status {
+  font-size: 8px;
+}
+
+.header-topbar__left .exchange-rate--compact {
+  background-color: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.header-topbar__left .exchange-rate--compact .exchange-rate__value {
+  color: var(--white);
+}
+
+.header-topbar__left .exchange-rate__icon {
+  color: #22d3ee;
+}
+
+.header-topbar__right {
+  display: flex;
+  align-items: center;
+}
+
+.header-topbar__phone {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.6);
+  transition: color var(--transition);
+}
+
+.header-topbar__phone:hover {
+  color: var(--white);
+}
+
+/* Main header */
+.header {
+  position: fixed;
+  top: var(--topbar-height, 40px);
   left: 0;
   right: 0;
   height: var(--header-height);
@@ -51,7 +130,7 @@
 .header__nav {
   display: flex;
   align-items: center;
-  gap: 32px;
+  gap: 28px;
 }
 
 .header__link {
@@ -62,6 +141,17 @@
   line-height: 1.2;
   letter-spacing: 0.3px;
   padding: 4px 0;
+}
+
+.header__link--auction {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--cyan);
+}
+
+.header__link--auction.active {
+  color: var(--primary);
 }
 
 .header__link::after {
@@ -90,19 +180,6 @@
   gap: 20px;
 }
 
-.header__phone {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--black);
-}
-
-.header__phone:hover {
-  color: var(--cyan);
-}
-
 .header__cta {
   padding: 8px 20px;
   font-size: 12px;
@@ -122,12 +199,16 @@
 }
 
 @media (max-width: 1024px) {
-  .header__phone {
+  .header-topbar {
     display: none;
   }
 
+  .header {
+    top: 0;
+  }
+
   .header__nav {
-    gap: 24px;
+    gap: 20px;
   }
 }
 
