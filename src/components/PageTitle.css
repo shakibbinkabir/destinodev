@@ -1,0 +1,59 @@
+.page-title {
+  position: relative;
+  background-image: url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1600&h=400&fit=crop');
+  background-size: cover;
+  background-position: center;
+  padding: var(--space-2xl) 0;
+  margin-top: var(--header-height);
+}
+
+.page-title__overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(13, 13, 59, 0.85);
+}
+
+.page-title__content {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+}
+
+.page-title__heading {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: var(--space-md);
+}
+
+.page-title__breadcrumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.page-title__crumb {
+  font-size: 13px;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.6);
+  transition: color var(--transition);
+}
+
+.page-title__crumb:hover {
+  color: var(--white);
+}
+
+.page-title__crumb--active {
+  color: var(--cyan);
+}
+
+.page-title__crumb-separator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(255, 255, 255, 0.3);
+}

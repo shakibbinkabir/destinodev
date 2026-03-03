@@ -1,0 +1,27 @@
+:root {
+  --primary: #232287;
+  --primary-light: #32488f;
+  --deep: #0d0d3b;
+  --muted: #a3adc1;
+  --cyan: #1892c2;
+  --black: #333;
+  --white: #fff;
+  --light: #f5f5f5;
+  --border: #e0e0e0;
+  --input-bg: #f3f3f3;
+
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 40px;
+  --space-2xl: 60px;
+  --space-section: 60px;
+  --container-max: 1400px;
+  --container-pad: 5%;
+
+  --transition: 0.3s ease-out;
+
+  --header-height: 64px;
+  --header-height-scrolled: 56px;
+}

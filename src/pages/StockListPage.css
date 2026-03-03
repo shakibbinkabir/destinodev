@@ -1,0 +1,208 @@
+.stock-page__layout {
+  display: flex;
+  gap: var(--space-lg);
+  align-items: flex-start;
+}
+
+.stock-page__results {
+  flex: 1;
+  min-width: 0;
+}
+
+.stock-page__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-lg);
+  padding-bottom: var(--space-md);
+  border-bottom: 1px solid var(--border);
+}
+
+.stock-page__toolbar-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.stock-page__filter-toggle {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--black);
+  border: 1px solid var(--border);
+  transition: border-color var(--transition);
+}
+
+.stock-page__filter-toggle:hover {
+  border-color: var(--primary);
+}
+
+.stock-page__count {
+  font-size: 13px;
+  font-weight: 400;
+  color: #777;
+}
+
+.stock-page__toolbar-right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.stock-page__sort {
+  height: 36px;
+  padding: 0 32px 0 12px;
+  background-color: var(--input-bg);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  font-weight: 400;
+  color: var(--black);
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+}
+
+.stock-page__view-toggle {
+  display: flex;
+  border: 1px solid var(--border);
+}
+
+.stock-page__view-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 34px;
+  color: #999;
+  transition: background-color var(--transition), color var(--transition);
+}
+
+.stock-page__view-btn + .stock-page__view-btn {
+  border-left: 1px solid var(--border);
+}
+
+.stock-page__view-btn--active {
+  background-color: var(--primary);
+  color: var(--white);
+}
+
+.stock-page__grid {
+  display: grid;
+  gap: var(--space-lg);
+}
+
+.stock-page__grid--grid {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.stock-page__grid--list {
+  grid-template-columns: 1fr;
+}
+
+.stock-page__grid--list .car-card {
+  flex-direction: row;
+}
+
+.stock-page__grid--list .car-card__image-wrap {
+  width: 280px;
+  flex-shrink: 0;
+}
+
+.stock-page__grid--list .car-card__image-ratio {
+  padding-top: 66.66%;
+}
+
+.stock-page__empty {
+  text-align: center;
+  padding: var(--space-2xl);
+}
+
+.stock-page__empty p {
+  font-size: 14px;
+  font-weight: 300;
+  color: #777;
+  margin-bottom: var(--space-md);
+}
+
+.stock-page__pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  margin-top: var(--space-xl);
+}
+
+.stock-page__page-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 var(--space-sm);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--black);
+  border: 1px solid var(--border);
+  transition: background-color var(--transition), color var(--transition), border-color var(--transition);
+}
+
+.stock-page__page-btn:hover {
+  border-color: var(--primary);
+}
+
+.stock-page__page-btn--active {
+  background-color: var(--primary);
+  color: var(--white);
+  border-color: var(--primary);
+}
+
+.stock-page__page-btn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+@media (max-width: 1024px) {
+  .stock-page__grid--grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .stock-page__grid--list .car-card__image-wrap {
+    width: 220px;
+  }
+}
+
+@media (max-width: 768px) {
+  .stock-page__layout {
+    flex-direction: column;
+  }
+
+  .stock-page__filter-toggle {
+    display: flex;
+  }
+
+  .stock-page__grid--grid {
+    grid-template-columns: 1fr;
+  }
+
+  .stock-page__grid--list .car-card {
+    flex-direction: column;
+  }
+
+  .stock-page__grid--list .car-card__image-wrap {
+    width: 100%;
+  }
+
+  .stock-page__toolbar {
+    flex-direction: column;
+    gap: var(--space-sm);
+    align-items: flex-start;
+  }
+
+  .stock-page__view-toggle {
+    display: none;
+  }
+}
