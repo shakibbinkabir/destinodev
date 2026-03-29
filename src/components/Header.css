@@ -104,27 +104,13 @@
 .header__logo {
   display: flex;
   align-items: center;
-  gap: 10px;
   flex-shrink: 0;
 }
 
-.header__logo-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 34px;
-  height: 34px;
-  background-color: var(--primary);
-  color: var(--white);
-  font-size: 16px;
-  font-weight: 700;
-}
-
-.header__logo-text {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--primary);
-  letter-spacing: 2px;
+.header__logo-img {
+  height: 36px;
+  width: auto;
+  display: block;
 }
 
 .header__nav {
@@ -178,6 +164,20 @@
   display: flex;
   align-items: center;
   gap: 20px;
+}
+
+.header__login {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--black);
+  transition: color var(--transition);
+}
+
+.header__login:hover {
+  color: var(--primary);
 }
 
 .header__cta {

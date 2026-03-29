@@ -14,27 +14,14 @@
 .footer__logo {
   display: flex;
   align-items: center;
-  gap: 10px;
   margin-bottom: var(--space-md);
 }
 
-.footer__logo-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 30px;
-  height: 30px;
-  background-color: var(--white);
-  color: var(--primary);
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.footer__logo-text {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--white);
-  letter-spacing: 2px;
+.footer__logo-img {
+  height: 32px;
+  width: auto;
+  display: block;
+  filter: brightness(0) invert(1);
 }
 
 .footer__tagline {
@@ -121,6 +108,42 @@
 
 .footer__contact-item a:hover {
   color: var(--cyan);
+}
+
+.footer__group {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: var(--space-lg) 0;
+}
+
+.footer__group-inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.footer__group-label {
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.footer__group-link {
+  display: flex;
+  align-items: center;
+  opacity: 0.5;
+  transition: opacity var(--transition);
+}
+
+.footer__group-link:hover {
+  opacity: 0.85;
+}
+
+.footer__group-logo {
+  height: 24px;
+  width: auto;
+  filter: brightness(0) invert(1);
 }
 
 .footer__bottom {

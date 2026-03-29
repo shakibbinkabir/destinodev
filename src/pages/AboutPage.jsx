@@ -5,6 +5,7 @@ import {
 import PageTitle from '../components/PageTitle';
 import ProcessSteps from '../components/ProcessSteps';
 import CTABanner from '../components/CTABanner';
+import Partners from '../components/Partners';
 import { company } from '../data/company';
 import './AboutPage.css';
 
@@ -134,6 +135,7 @@ export default function AboutPage() {
               <tr><td>Fax</td><td>{company.fax}</td></tr>
               <tr><td>Email</td><td>{company.email}</td></tr>
               <tr><td>Memberships</td><td>{company.companyInfo.memberships}</td></tr>
+              <tr><td>Group Company</td><td><a href="https://destino-v.com" target="_blank" rel="noopener noreferrer">Destino Pte Ltd</a> — Car Wash Solutions (Singapore)</td></tr>
             </tbody>
           </table>
         </div>
@@ -165,6 +167,12 @@ export default function AboutPage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      <section className="section section--light">
+        <div className="wrap">
+          <Partners />
         </div>
       </section>
 

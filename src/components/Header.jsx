@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { Menu, X, Phone, Gavel } from 'lucide-react';
+import { Menu, X, Phone, Gavel, LogIn } from 'lucide-react';
 import JapanClock from './JapanClock';
 import ExchangeRate from './ExchangeRate';
 import './Header.css';
@@ -47,23 +47,26 @@ export default function Header() {
       <header className={`header${scrolled ? ' header--scrolled' : ''}`}>
         <div className="header__inner wrap">
           <Link to="/" className="header__logo" onClick={closeMenu}>
-            <span className="header__logo-icon">D</span>
-            <span className="header__logo-text">DESTINO</span>
+            <img src="/logo-link.png" alt="DESTINO" className="header__logo-img" />
           </Link>
 
           <nav className={`header__nav${menuOpen ? ' header__nav--open' : ''}`}>
             <NavLink to="/" className="header__link" onClick={closeMenu} end>Home</NavLink>
             <NavLink to="/stock" className="header__link" onClick={closeMenu}>Stock List</NavLink>
-            <NavLink to="/auction" className="header__link header__link--auction" onClick={closeMenu}>
+            <a href="https://autobidjp.com/login" className="header__link header__link--auction" target="_blank" rel="noopener noreferrer" onClick={closeMenu}>
               <Gavel size={13} />
               Live Auction
-            </NavLink>
+            </a>
             <NavLink to="/about" className="header__link" onClick={closeMenu}>About</NavLink>
             <NavLink to="/delivered" className="header__link" onClick={closeMenu}>Delivered</NavLink>
             <NavLink to="/contact" className="header__link" onClick={closeMenu}>Contact</NavLink>
           </nav>
 
           <div className="header__actions">
+            <a href="https://app.destinoexport.com/login.php" className="header__login" target="_blank" rel="noopener noreferrer">
+              <LogIn size={14} />
+              Login
+            </a>
             <Link to="/contact" className="header__cta btn btn--cyan">Get a Quote</Link>
           </div>
 

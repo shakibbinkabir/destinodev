@@ -9,8 +9,7 @@ export default function Footer() {
       <div className="footer__main wrap">
         <div className="footer__brand">
           <Link to="/" className="footer__logo">
-            <span className="footer__logo-icon">D</span>
-            <span className="footer__logo-text">DESTINO</span>
+            <img src="/logo-link.png" alt="DESTINO" className="footer__logo-img" />
           </Link>
           <p className="footer__tagline">{company.tagline}</p>
           <p className="footer__desc">
@@ -67,6 +66,15 @@ export default function Footer() {
             <Clock size={14} />
             <span>{company.hours.weekday.days}: {company.hours.weekday.time}</span>
           </div>
+        </div>
+      </div>
+
+      <div className="footer__group">
+        <div className="wrap footer__group-inner">
+          <span className="footer__group-label">Group Company</span>
+          <a href="https://destino-v.com" className="footer__group-link" target="_blank" rel="noopener noreferrer">
+            <img src="/logo-link.png" alt="DESTINO V — Car Wash Solutions" className="footer__group-logo" />
+          </a>
         </div>
       </div>
 

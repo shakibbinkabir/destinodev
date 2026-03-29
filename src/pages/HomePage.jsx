@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ShieldCheck, Globe, DollarSign, UserCheck, ArrowRight } from 'lucide-react';
+import { ShieldCheck, Globe, DollarSign, UserCheck, ArrowRight, Play } from 'lucide-react';
 import SearchBar from '../components/SearchBar';
 import StatsStrip from '../components/StatsStrip';
 import CarCard from '../components/CarCard';
 import ProcessSteps from '../components/ProcessSteps';
 import TestimonialSlider from '../components/TestimonialSlider';
 import CTABanner from '../components/CTABanner';
+import Partners from '../components/Partners';
 import { cars } from '../data/cars';
 import './HomePage.css';
 
@@ -15,6 +16,8 @@ const heroImages = [
   'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1600&h=900&fit=crop',
   'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1600&h=900&fit=crop',
 ];
+
+const CHANNEL_URL = 'https://www.youtube.com/channel/UC9r_ugFs9RL4OkeEAwztQ7g';
 
 const usps = [
   {
@@ -41,12 +44,22 @@ const usps = [
 
 export default function HomePage() {
   const [heroIndex, setHeroIndex] = useState(0);
+  const [videos, setVideos] = useState([]);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setHeroIndex((prev) => (prev + 1) % heroImages.length);
     }, 5000);
     return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/youtube-feed')
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.success) setVideos(json.data.videos.slice(0, 3));
+      })
+      .catch(() => {});
   }, []);
 
   const featured = cars.filter((c) => c.featured).slice(0, 6);
@@ -88,11 +101,11 @@ export default function HomePage() {
         </div>
       </section>
 
-      <SearchBar />
       <StatsStrip />
 
       <section className="section section--white">
         <div className="wrap">
+          <SearchBar />
           <div className="section-header">
             <h2>Featured Vehicles</h2>
             <Link to="/stock" className="section-header__link">
@@ -158,6 +171,12 @@ export default function HomePage() {
 
       <section className="section section--light">
         <div className="wrap">
+          <Partners />
+        </div>
+      </section>
+
+      <section className="section section--white">
+        <div className="wrap">
           <div className="section-header">
             <h2>Recently Added</h2>
             <Link to="/stock" className="section-header__link">
@@ -177,6 +196,54 @@ export default function HomePage() {
           <TestimonialSlider />
         </div>
       </section>
+
+      {videos.length > 0 && (
+        <section className="section section--light">
+          <div className="wrap">
+            <div className="section-header">
+              <h2>From Our Channel</h2>
+              <a
+                href={CHANNEL_URL}
+                className="section-header__link"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View All <ArrowRight size={14} />
+              </a>
+            </div>
+            <div className="home-videos">
+              {videos.map((video) => (
+                <a
+                  key={video.videoId}
+                  href={`https://www.youtube.com/watch?v=${video.videoId}`}
+                  className="home-video"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <div className="home-video__thumb">
+                    <img
+                      src={`https://img.youtube.com/vi/${video.videoId}/mqdefault.jpg`}
+                      alt={video.title}
+                      loading="lazy"
+                    />
+                    <div className="home-video__play">
+                      <Play size={24} />
+                    </div>
+                  </div>
+                  <div className="home-video__info">
+                    <h4 className="home-video__title">{video.title}</h4>
+                    {video.views && (
+                      <span className="home-video__views">
+                        {Number(video.views).toLocaleString()} views
+                      </span>
+                    )}
+                  </div>
+                </a>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       <CTABanner />
     </div>

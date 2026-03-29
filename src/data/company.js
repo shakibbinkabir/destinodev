@@ -1,6 +1,7 @@
 export const company = {
   name: "DESTINO Corporation",
   shortName: "DESTINO",
+  website: "https://destino-v.com",
   tagline: "For Those Who Love Import Cars.",
   established: 1995,
   yearsExperience: 29,
@@ -55,7 +56,7 @@ export const deliveredCars = [
     year: 2023,
     destination: "South Africa",
     deliveryDate: "2024-11-15",
-    image: "https://images.unsplash.com/photo-1625231334168-40f4ae642985?w=800&h=533&fit=crop",
+    image: "https://images.unsplash.com/photo-1594502184342-2e12f877aa73?w=800&h=533&fit=crop",
     customerName: "James K.",
     testimonial: "Arrived in perfect condition. The entire process was handled professionally."
   },
@@ -99,7 +100,7 @@ export const deliveredCars = [
     year: 2022,
     destination: "Jamaica",
     deliveryDate: "2024-09-05",
-    image: "https://images.unsplash.com/photo-1606611013004-1a462e535015?w=800&h=533&fit=crop",
+    image: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800&h=533&fit=crop",
     customerName: "Robert T.",
     testimonial: null
   },
@@ -121,7 +122,7 @@ export const deliveredCars = [
     year: 2023,
     destination: "Fiji",
     deliveryDate: "2024-08-02",
-    image: "https://images.unsplash.com/photo-1606611013004-1a462e535015?w=800&h=533&fit=crop",
+    image: "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800&h=533&fit=crop",
     customerName: null,
     testimonial: null
   },
@@ -143,7 +144,7 @@ export const deliveredCars = [
     year: 2024,
     destination: "Mozambique",
     deliveryDate: "2024-07-08",
-    image: "https://images.unsplash.com/photo-1625231334168-40f4ae642985?w=800&h=533&fit=crop",
+    image: "https://images.unsplash.com/photo-1594502184342-2e12f877aa73?w=800&h=533&fit=crop",
     customerName: "Carlos F.",
     testimonial: "Premium vehicle delivered in showroom condition. Highly recommended."
   },

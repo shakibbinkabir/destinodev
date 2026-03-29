@@ -28,18 +28,7 @@ export default function JapanClock() {
         month: 'short',
         day: 'numeric',
       }),
-      isBusinessHours: checkBusinessHours(now),
     };
-  }
-
-  function checkBusinessHours(now) {
-    const jp = new Date(now.toLocaleString('en-US', { timeZone: 'Asia/Tokyo' }));
-    const day = jp.getDay();
-    const hour = jp.getHours();
-
-    if (day === 1) return false;
-    if (day === 0 || day === 6) return hour >= 10 && hour < 18;
-    return hour >= 10 && hour < 19;
   }
 
   return (
@@ -51,9 +40,6 @@ export default function JapanClock() {
         <span className="japan-clock__label">Japan (JST)</span>
         <span className="japan-clock__time">{time.time}</span>
       </div>
-      <span className={`japan-clock__status${time.isBusinessHours ? ' japan-clock__status--open' : ''}`}>
-        {time.isBusinessHours ? 'Open' : 'Closed'}
-      </span>
     </div>
   );
 }

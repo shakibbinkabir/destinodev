@@ -33,7 +33,7 @@ export default function SearchBar() {
 
   return (
     <div className="search-bar">
-      <div className="search-bar__inner wrap">
+      <div className="search-bar__inner">
         <div className="search-bar__fields">
           <div className="search-bar__field">
             <label className="search-bar__label">Make</label>

@@ -34,21 +34,6 @@
   font-variant-numeric: tabular-nums;
 }
 
-.japan-clock__status {
-  font-size: 9px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  padding: 2px 6px;
-  background-color: #fee2e2;
-  color: #dc2626;
-}
-
-.japan-clock__status--open {
-  background-color: #dcfce7;
-  color: #16a34a;
-}
-
 @media (max-width: 1024px) {
   .japan-clock {
     display: none;

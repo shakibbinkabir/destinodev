@@ -19,9 +19,9 @@ export const cars = [
     featured: true,
     badge: "Featured",
     images: [
-      "https://images.unsplash.com/photo-1625231334168-40f4ae642985?w=800&h=533&fit=crop",
+      "https://images.unsplash.com/photo-1594502184342-2e12f877aa73?w=800&h=533&fit=crop",
       "https://images.unsplash.com/photo-1619405399517-d7fce0f13302?w=800&h=533&fit=crop",
-      "https://images.unsplash.com/photo-1606611013004-1a462e535015?w=800&h=533&fit=crop",
+      "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800&h=533&fit=crop",
       "https://images.unsplash.com/photo-1619405399517-d7fce0f13302?w=800&h=533&fit=crop"
     ],
     description: "Low-mileage Land Cruiser 300 in excellent condition. Full leather interior, advanced safety suite, and premium JBL audio system. Serviced exclusively at Toyota dealer. Export-ready with all documentation prepared."
@@ -48,7 +48,7 @@ export const cars = [
     images: [
       "https://images.unsplash.com/photo-1559416523-140ddc3d238c?w=800&h=533&fit=crop",
       "https://images.unsplash.com/photo-1621993202323-f438eec934ff?w=800&h=533&fit=crop",
-      "https://images.unsplash.com/photo-1558618666-fcd25c85f82e?w=800&h=533&fit=crop"
+      "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=800&h=533&fit=crop"
     ],
     description: "Toyota Hilux Revo with TRD body kit. Powerful 2.8L diesel engine with excellent fuel economy. Perfect for both on-road comfort and off-road capability."
   },
@@ -73,8 +73,8 @@ export const cars = [
     badge: "Featured",
     images: [
       "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?w=800&h=533&fit=crop",
-      "https://images.unsplash.com/photo-1606611013004-1a462e535015?w=800&h=533&fit=crop",
-      "https://images.unsplash.com/photo-1625231334168-40f4ae642985?w=800&h=533&fit=crop"
+      "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800&h=533&fit=crop",
+      "https://images.unsplash.com/photo-1594502184342-2e12f877aa73?w=800&h=533&fit=crop"
     ],
     description: "Well-maintained Prado TX-L with premium leather seats and sunroof. Kdss suspension system for superior ride quality. Full service history available."
   },
@@ -125,7 +125,7 @@ export const cars = [
     badge: "New",
     images: [
       "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=800&h=533&fit=crop",
-      "https://images.unsplash.com/photo-1606611013004-1a462e535015?w=800&h=533&fit=crop",
+      "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800&h=533&fit=crop",
       "https://images.unsplash.com/photo-1619405399517-d7fce0f13302?w=800&h=533&fit=crop"
     ],
     description: "Nearly new Corolla Cross Hybrid with exceptional fuel economy. Toyota Safety Sense 3.0, 9-inch touchscreen, and wireless Apple CarPlay."
@@ -150,7 +150,7 @@ export const cars = [
     featured: false,
     badge: null,
     images: [
-      "https://images.unsplash.com/photo-1568844293986-8d0400f4745b?w=800&h=533&fit=crop",
+      "https://images.unsplash.com/photo-1542362567-b07e54358753?w=800&h=533&fit=crop",
       "https://images.unsplash.com/photo-1619405399517-d7fce0f13302?w=800&h=533&fit=crop"
     ],
     description: "Reliable RAV4 Adventure grade with rugged styling. Dynamic Torque Vectoring AWD, multi-terrain select, and premium audio."
@@ -176,7 +176,7 @@ export const cars = [
     badge: "Premium",
     images: [
       "https://images.unsplash.com/photo-1520031441872-265e4ff70366?w=800&h=533&fit=crop",
-      "https://images.unsplash.com/photo-1606611013004-1a462e535015?w=800&h=533&fit=crop",
+      "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800&h=533&fit=crop",
       "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&h=533&fit=crop"
     ],
     description: "Handcrafted AMG 4.0L V8 biturbo engine with 577 hp. AMG RIDE CONTROL suspension, Burmester surround sound, and designo exclusive interior."
@@ -252,7 +252,7 @@ export const cars = [
     featured: false,
     badge: "New",
     images: [
-      "https://images.unsplash.com/photo-1606611013004-1a462e535015?w=800&h=533&fit=crop",
+      "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800&h=533&fit=crop",
       "https://images.unsplash.com/photo-1520031441872-265e4ff70366?w=800&h=533&fit=crop"
     ],
     description: "GLE 450 4MATIC with EQ Boost. AMG Line, air suspension, head-up display, and panoramic sliding sunroof."
@@ -328,8 +328,8 @@ export const cars = [
     featured: false,
     badge: null,
     images: [
-      "https://images.unsplash.com/photo-1606611013004-1a462e535015?w=800&h=533&fit=crop",
-      "https://images.unsplash.com/photo-1625231334168-40f4ae642985?w=800&h=533&fit=crop"
+      "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800&h=533&fit=crop",
+      "https://images.unsplash.com/photo-1594502184342-2e12f877aa73?w=800&h=533&fit=crop"
     ],
     description: "Full-size Patrol with V8 power. Hydraulic body motion control, Bose audio, and premium leather with quilted stitching throughout."
   },
@@ -379,7 +379,7 @@ export const cars = [
     featured: false,
     badge: "Premium",
     images: [
-      "https://images.unsplash.com/photo-1606611013004-1a462e535015?w=800&h=533&fit=crop",
+      "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800&h=533&fit=crop",
       "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=800&h=533&fit=crop"
     ],
     description: "Cayenne S with Sport Chrono package, PASM air suspension, panoramic roof, and Bose surround sound. Full Porsche service history."
@@ -430,8 +430,8 @@ export const cars = [
     featured: false,
     badge: "New",
     images: [
-      "https://images.unsplash.com/photo-1625231334168-40f4ae642985?w=800&h=533&fit=crop",
-      "https://images.unsplash.com/photo-1606611013004-1a462e535015?w=800&h=533&fit=crop"
+      "https://images.unsplash.com/photo-1594502184342-2e12f877aa73?w=800&h=533&fit=crop",
+      "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800&h=533&fit=crop"
     ],
     description: "All-new LX 600 with twin-turbo V6. Mark Levinson reference audio, fingerprint authentication, and Executive rear seat package."
   },
@@ -506,7 +506,7 @@ export const cars = [
     badge: "Premium",
     images: [
       "https://images.unsplash.com/photo-1619405399517-d7fce0f13302?w=800&h=533&fit=crop",
-      "https://images.unsplash.com/photo-1606611013004-1a462e535015?w=800&h=533&fit=crop"
+      "https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800&h=533&fit=crop"
     ],
     description: "Top-of-the-line Alphard Executive Lounge with Ottoman rear seats. JBL premium audio, digital rear-view mirror, and advanced parking support."
   },
@@ -531,7 +531,7 @@ export const cars = [
     badge: null,
     images: [
       "https://images.unsplash.com/photo-1621007947382-bb3c3994e3fb?w=800&h=533&fit=crop",
-      "https://images.unsplash.com/photo-1568844293986-8d0400f4745b?w=800&h=533&fit=crop"
+      "https://images.unsplash.com/photo-1542362567-b07e54358753?w=800&h=533&fit=crop"
     ],
     description: "Economical and practical Corolla Fielder with spacious cargo area. Toyota Safety Sense, backup camera, and keyless entry."
   },

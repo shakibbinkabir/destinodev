@@ -1,7 +1,5 @@
 .search-bar {
-  background-color: var(--white);
-  border-bottom: 1px solid var(--border);
-  padding: var(--space-lg) 0;
+  margin-bottom: var(--space-xl);
 }
 
 .search-bar__inner {

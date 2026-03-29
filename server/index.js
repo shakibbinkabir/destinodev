@@ -91,6 +91,62 @@ app.get('/api/exchange-rate', async (req, res) => {
   }
 });
 
+const YT_CHANNEL_ID = 'UC9r_ugFs9RL4OkeEAwztQ7g';
+const YT_RSS_URL = `https://www.youtube.com/feeds/videos.xml?channel_id=${YT_CHANNEL_ID}`;
+
+function parseYouTubeRSS(xml) {
+  const entries = xml.split('<entry>').slice(1);
+
+  return entries.map((entry) => {
+    const get = (tag) => {
+      const match = entry.match(new RegExp(`<${tag}[^>]*>([^<]*)</${tag}>`));
+      return match ? match[1].trim() : '';
+    };
+    const getAttr = (tag, attr) => {
+      const match = entry.match(new RegExp(`<${tag}[^>]*${attr}="([^"]*)"`, 's'));
+      return match ? match[1] : '';
+    };
+
+    return {
+      videoId: get('yt:videoId'),
+      title: get('title'),
+      published: get('published'),
+      thumbnail: getAttr('media:thumbnail', 'url'),
+      views: getAttr('media:community media:statistics', 'views'),
+    };
+  });
+}
+
+app.get('/api/youtube-feed', async (req, res) => {
+  try {
+    console.log('[YouTubeFeed] Fetching RSS feed...');
+    const apiRes = await fetch(YT_RSS_URL);
+
+    if (!apiRes.ok) {
+      throw new Error(`YouTube RSS responded with status ${apiRes.status}`);
+    }
+
+    const xml = await apiRes.text();
+    const videos = parseYouTubeRSS(xml);
+    console.log(`[YouTubeFeed] Parsed ${videos.length} videos`);
+
+    return res.json({
+      success: true,
+      data: {
+        channelId: YT_CHANNEL_ID,
+        videos,
+        fetchedAt: Date.now(),
+      },
+    });
+  } catch (err) {
+    console.error('[YouTubeFeed] Error:', err.message);
+    return res.status(500).json({
+      success: false,
+      error: 'Failed to fetch YouTube feed.',
+    });
+  }
+});
+
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', time: new Date().toISOString() });
 });
