@@ -29,7 +29,7 @@ export const company = {
     youtube: "#",
     instagram: "#",
     facebook: "#",
-    whatsapp: "#"
+    whatsapp: "https://wa.me/81459496777"
   },
   locations: [
     {
