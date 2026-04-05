@@ -143,6 +143,121 @@
   color: #777;
 }
 
+.review-modal__overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--space-lg);
+}
+
+.review-modal {
+  background-color: var(--white);
+  width: 100%;
+  max-width: 540px;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: var(--space-xl);
+  position: relative;
+}
+
+.review-modal__close {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--space-md);
+  color: #999;
+  transition: color var(--transition);
+}
+
+.review-modal__close:hover {
+  color: var(--black);
+}
+
+.review-modal__title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: var(--space-xs);
+}
+
+.review-modal__subtitle {
+  font-size: 13px;
+  font-weight: 300;
+  color: #777;
+  margin-bottom: var(--space-lg);
+}
+
+.review-modal__form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.review-modal__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+.review-modal__field label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--black);
+  margin-bottom: 6px;
+}
+
+.review-modal__field input,
+.review-modal__field textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  font-size: 13px;
+  font-weight: 400;
+  background-color: var(--input-bg);
+  color: var(--black);
+}
+
+.review-modal__field textarea {
+  resize: vertical;
+}
+
+.review-modal__stars {
+  display: flex;
+  gap: 4px;
+}
+
+.review-modal__star {
+  color: #ddd;
+  transition: color var(--transition);
+}
+
+.review-modal__star--active {
+  color: #f5a623;
+}
+
+.review-modal__success {
+  text-align: center;
+  padding: var(--space-lg) 0;
+}
+
+.review-modal__success h3 {
+  margin-bottom: var(--space-sm);
+}
+
+.review-modal__success p {
+  font-size: 14px;
+  font-weight: 300;
+  color: #777;
+  margin-bottom: var(--space-lg);
+  line-height: 1.6;
+}
+
 @media (max-width: 1024px) {
   .delivered-page__grid {
     grid-template-columns: repeat(2, 1fr);
