@@ -29,8 +29,22 @@
 
 .partners__item {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: var(--space-sm);
+  text-decoration: none;
+}
+
+.partners__name {
+  font-size: 11px;
+  font-weight: 500;
+  color: #999;
+  transition: color var(--transition);
+}
+
+.partners__item:hover .partners__name {
+  color: var(--black);
 }
 
 .partners__item img {
