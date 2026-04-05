@@ -85,29 +85,17 @@
   color: var(--white);
 }
 
-.footer__contact-item {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  font-size: 13px;
-  font-weight: 300;
-  margin-bottom: var(--space-md);
-  line-height: 1.6;
+.footer__map-wrap {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  overflow: hidden;
 }
 
-.footer__contact-item svg {
-  flex-shrink: 0;
-  margin-top: 3px;
-  opacity: 0.5;
-}
-
-.footer__contact-item a {
-  color: rgba(255, 255, 255, 0.7);
-  transition: color var(--transition);
-}
-
-.footer__contact-item a:hover {
-  color: var(--cyan);
+.footer__map-iframe {
+  display: block;
+  width: 100%;
+  height: 180px;
+  border: none;
+  filter: grayscale(80%) invert(90%) contrast(90%);
 }
 
 .footer__group {
@@ -115,35 +103,35 @@
   padding: var(--space-lg) 0;
 }
 
-.footer__group-inner {
-  display: flex;
-  align-items: center;
+.footer__group-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
   gap: var(--space-md);
 }
 
-.footer__group-label {
-  font-size: 11px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  color: rgba(255, 255, 255, 0.35);
-}
-
-.footer__group-link {
+.footer__group-card {
   display: flex;
-  align-items: center;
-  opacity: 0.5;
-  transition: opacity var(--transition);
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--space-md);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: border-color var(--transition);
 }
 
-.footer__group-link:hover {
-  opacity: 0.85;
+.footer__group-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
-.footer__group-logo {
-  height: 24px;
-  width: auto;
-  filter: brightness(0) invert(1);
+.footer__group-card-name {
+  font-size: 12px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.footer__group-card-desc {
+  font-size: 11px;
+  font-weight: 300;
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .footer__bottom {
@@ -167,6 +155,10 @@
   .footer__main {
     grid-template-columns: 1fr 1fr;
   }
+
+  .footer__group-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
 }
 
 @media (max-width: 768px) {
@@ -175,6 +167,10 @@
     gap: var(--space-xl);
     padding-top: var(--space-xl);
     padding-bottom: var(--space-xl);
+  }
+
+  .footer__group-grid {
+    grid-template-columns: 1fr 1fr;
   }
 
   .footer__bottom-inner {

@@ -1,7 +1,35 @@
 import { Link } from 'react-router-dom';
-import { MapPin, Phone, Mail, Clock, Youtube, Instagram, Facebook } from 'lucide-react';
+import { Youtube, Instagram, Facebook } from 'lucide-react';
 import { company } from '../data/company';
 import './Footer.css';
+
+const groupCompanies = [
+  {
+    name: 'DESTINO Yokohama Showroom',
+    description: 'Head office & vehicle showroom',
+    url: 'https://destino.jp',
+  },
+  {
+    name: 'Scuderia Destino Service Workshop',
+    description: 'Certified maintenance & repair factory',
+    url: 'https://destino.jp',
+  },
+  {
+    name: 'Carrozzeria Destino',
+    description: 'Sheet metal & painting factory',
+    url: 'https://destino.jp',
+  },
+  {
+    name: 'Car Washing EXP',
+    description: 'MK Seiko car wash machine solutions',
+    url: 'https://destino-v.com',
+  },
+  {
+    name: 'Sagittario',
+    description: 'Automotive parts & tuning',
+    url: 'https://sagittario-corse.jp',
+  },
+];
 
 export default function Footer() {
   return (
@@ -35,7 +63,8 @@ export default function Footer() {
           <Link to="/" className="footer__link">Home</Link>
           <Link to="/stock" className="footer__link">Stock List</Link>
           <Link to="/about" className="footer__link">About Us</Link>
-          <Link to="/delivered" className="footer__link">Delivered Cars</Link>
+          <Link to="/delivered" className="footer__link">Happy Customers</Link>
+          <Link to="/shipping" className="footer__link">Shipping</Link>
           <Link to="/contact" className="footer__link">Contact</Link>
         </div>
 
@@ -48,33 +77,37 @@ export default function Footer() {
           <Link to="/stock?bodyType=Van" className="footer__link">Vans</Link>
         </div>
 
-        <div className="footer__contact">
-          <h4 className="footer__heading">Contact Us</h4>
-          <div className="footer__contact-item">
-            <MapPin size={14} />
-            <span>{company.address.full}</span>
-          </div>
-          <div className="footer__contact-item">
-            <Phone size={14} />
-            <a href={`tel:${company.phone}`}>{company.phone}</a>
-          </div>
-          <div className="footer__contact-item">
-            <Mail size={14} />
-            <a href={`mailto:${company.email}`}>{company.email}</a>
-          </div>
-          <div className="footer__contact-item">
-            <Clock size={14} />
-            <span>{company.hours.weekday.days}: {company.hours.weekday.time}</span>
+        <div className="footer__map-col">
+          <h4 className="footer__heading">Our Location</h4>
+          <div className="footer__map-wrap">
+            <iframe
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3247.06!2d139.5555!3d35.5465!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2z5qiq5rWc5biC6YO957-g5Yy6!5e0!3m2!1sja!2sjp!4v1700000000000"
+              className="footer__map-iframe"
+              title="DESTINO Yokohama Head Office"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            />
           </div>
         </div>
       </div>
 
       <div className="footer__group">
-        <div className="wrap footer__group-inner">
-          <span className="footer__group-label">Group Company</span>
-          <a href="https://destino-v.com" className="footer__group-link" target="_blank" rel="noopener noreferrer">
-            <img src="/logo-link.png" alt="DESTINO V — Car Wash Solutions" className="footer__group-logo" />
-          </a>
+        <div className="wrap">
+          <h4 className="footer__heading" style={{ marginBottom: 'var(--space-md)' }}>Group Companies</h4>
+          <div className="footer__group-grid">
+            {groupCompanies.map((gc) => (
+              <a
+                key={gc.name}
+                href={gc.url}
+                className="footer__group-card"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span className="footer__group-card-name">{gc.name}</span>
+                <span className="footer__group-card-desc">{gc.description}</span>
+              </a>
+            ))}
+          </div>
         </div>
       </div>
 
