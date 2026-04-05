@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { Menu, X, Phone, Gavel, LogIn } from 'lucide-react';
+import { Menu, X, Phone, Gavel, LogIn, Ship } from 'lucide-react';
 import JapanClock from './JapanClock';
 import ExchangeRate from './ExchangeRate';
+import { company } from '../data/company';
 import './Header.css';
 
 export default function Header() {
@@ -58,7 +59,11 @@ export default function Header() {
               Live Auction
             </a>
             <NavLink to="/about" className="header__link" onClick={closeMenu}>About</NavLink>
-            <NavLink to="/delivered" className="header__link" onClick={closeMenu}>Delivered</NavLink>
+            <NavLink to="/delivered" className="header__link" onClick={closeMenu}>Happy Customers</NavLink>
+            <NavLink to="/shipping" className="header__link" onClick={closeMenu}>
+              <Ship size={13} />
+              Shipping
+            </NavLink>
             <NavLink to="/contact" className="header__link" onClick={closeMenu}>Contact</NavLink>
           </nav>
 
@@ -67,7 +72,7 @@ export default function Header() {
               <LogIn size={14} />
               Login
             </a>
-            <Link to="/contact" className="header__cta btn btn--cyan">Get a Quote</Link>
+            <a href={company.social.whatsapp} className="header__cta btn btn--cyan" target="_blank" rel="noopener noreferrer">Get a Quote</a>
           </div>
 
           <button

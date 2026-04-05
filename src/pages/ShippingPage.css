@@ -1,0 +1,109 @@
+.shipping-page__header {
+  text-align: center;
+  margin-bottom: var(--space-xl);
+}
+
+.shipping-page__subtitle {
+  font-size: 14px;
+  font-weight: 300;
+  color: #777;
+  max-width: 560px;
+  margin: var(--space-sm) auto var(--space-lg);
+  line-height: 1.8;
+}
+
+.shipping-page__download-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.shipping-page__viewer {
+  border: 1px solid var(--border);
+  margin-bottom: var(--space-xl);
+  background-color: var(--light);
+}
+
+.shipping-page__iframe {
+  display: block;
+  width: 100%;
+  height: 700px;
+  border: none;
+}
+
+.shipping-page__fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-md);
+  padding: var(--space-2xl);
+  color: var(--muted);
+}
+
+.shipping-page__fallback p {
+  font-size: 14px;
+  font-weight: 300;
+  color: #777;
+}
+
+.shipping-page__links {
+  padding-top: var(--space-xl);
+  border-top: 1px solid var(--border);
+}
+
+.shipping-page__links h3 {
+  margin-bottom: var(--space-lg);
+}
+
+.shipping-page__links-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-md);
+}
+
+.shipping-page__link-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+  padding: var(--space-lg);
+  border: 1px solid var(--border);
+  background-color: var(--light);
+  transition: border-color var(--transition), box-shadow var(--transition);
+}
+
+.shipping-page__link-card:hover {
+  border-color: var(--cyan);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.shipping-page__link-card svg {
+  flex-shrink: 0;
+  color: var(--cyan);
+  margin-top: 2px;
+}
+
+.shipping-page__link-card strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--black);
+  margin-bottom: 4px;
+}
+
+.shipping-page__link-card span {
+  font-size: 13px;
+  font-weight: 300;
+  color: #777;
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .shipping-page__links-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .shipping-page__iframe {
+    height: 400px;
+  }
+}
