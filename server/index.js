@@ -147,6 +147,29 @@ app.get('/api/youtube-feed', async (req, res) => {
   }
 });
 
+// Contact form inquiry endpoint — ready for email routing
+// TODO: Connect to Destino's official email (e.g. via nodemailer / SendGrid / SES)
+app.post('/api/inquiry', (req, res) => {
+  const { name, email, phone, country, inquiryType, message } = req.body;
+
+  if (!name || !email || !message) {
+    return res.status(400).json({ success: false, error: 'Missing required fields.' });
+  }
+
+  console.log('[Inquiry] New inquiry received:');
+  console.log(`  Name: ${name}`);
+  console.log(`  Email: ${email}`);
+  console.log(`  Phone: ${phone || 'N/A'}`);
+  console.log(`  Country: ${country || 'N/A'}`);
+  console.log(`  Type: ${inquiryType || 'N/A'}`);
+  console.log(`  Message: ${message.substring(0, 100)}...`);
+
+  // TODO: Send email to Destino's official address
+  // Example: await sendEmail({ to: 'export@destino.jp', subject: `New Inquiry from ${name}`, ... })
+
+  return res.json({ success: true, message: 'Inquiry received.' });
+});
+
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', time: new Date().toISOString() });
 });

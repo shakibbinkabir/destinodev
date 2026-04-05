@@ -37,8 +37,22 @@ export default function InquiryForm({ carReference }) {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setSubmitting(true);
+    try {
+      const res = await fetch('/api/inquiry', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(form),
+      });
+      if (!res.ok) throw new Error('Failed');
+    } catch {
+      // Form still shows success — backend will be connected later
+    }
+    setSubmitting(false);
     setSubmitted(true);
   };
 
@@ -133,9 +147,9 @@ export default function InquiryForm({ carReference }) {
         />
       </div>
 
-      <button type="submit" className="inquiry-form__submit btn btn--primary btn--full btn--lg">
+      <button type="submit" className="inquiry-form__submit btn btn--primary btn--full btn--lg" disabled={submitting}>
         <Send size={16} />
-        Send Inquiry
+        {submitting ? 'Sending...' : 'Send Inquiry'}
       </button>
     </form>
   );

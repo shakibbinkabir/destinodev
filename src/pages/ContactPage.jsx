@@ -107,11 +107,13 @@ export default function ContactPage() {
       </section>
 
       <section className="contact-page__map">
-        <div className="contact-page__map-placeholder">
-          <MapPin size={40} />
-          <p className="contact-page__map-title">DESTINO Yokohama Head Office</p>
-          <p className="contact-page__map-address">{company.address.full}</p>
-        </div>
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3247.06!2d139.5555!3d35.5465!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2z5qiq5rWc5biC6YO957-g5Yy6!5e0!3m2!1sja!2sjp!4v1700000000000"
+          className="contact-page__map-embed"
+          title="DESTINO Yokohama Head Office"
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+        />
       </section>
 
       <CTABanner />
