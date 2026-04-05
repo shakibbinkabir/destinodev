@@ -1,0 +1,1 @@
+- [Brand Color](brand_color.md) — Primary brand color is #32498F (dark blue)

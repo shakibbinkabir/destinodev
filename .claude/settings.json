@@ -7,7 +7,9 @@
       "Bash(find /c/Users/shaki/Desktop/destinodev -type f -name package.json -o -name vite.config.js -o -name vercel.json -o -name .env* -o -name *.env*)",
       "Bash(find /c/Users/shaki/Desktop/destinodev/src -type f -name *.js -o -name *.jsx)",
       "Bash(find /c/Users/shaki/Desktop/destinodev -type f \\\\\\(-name *.js -o -name *.jsx \\\\\\) -path */api/* -o -path */server/*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ]
   }
 }
