@@ -22,7 +22,8 @@ export const bodyTypes = [
 export const fuelTypes = [
   "Petrol",
   "Diesel",
-  "Hybrid"
+  "Hybrid",
+  "Electric"
 ];
 
 export const yearRange = {

@@ -1,12 +1,13 @@
 import { useParams, Link } from 'react-router-dom';
 import {
   ChevronRight, Gauge, Settings, Fuel, Palette, Cog, Users,
-  DoorOpen, Award, Car, Share2, MessageCircle, Facebook, Copy
+  DoorOpen, Award, Car, Share2, MessageCircle, Facebook, Copy, Zap, Battery
 } from 'lucide-react';
 import ImageGallery from '../components/ImageGallery';
 import CarCard from '../components/CarCard';
 import InquiryForm from '../components/InquiryForm';
 import { cars } from '../data/cars';
+import { company } from '../data/company';
 import './SingleCarPage.css';
 
 const specIcons = {
@@ -20,7 +21,15 @@ const specIcons = {
   seats: Users,
   doors: DoorOpen,
   condition: Award,
+  batteryCapacity: Battery,
+  motorOutput: Zap,
 };
+
+function getVehicleType(fuel) {
+  if (fuel === 'Electric' || fuel === 'EV') return 'EV';
+  if (fuel === 'Hybrid' || fuel === 'PHEV') return 'Hybrid';
+  return 'Gasoline';
+}
 
 export default function SingleCarPage() {
   const { id } = useParams();
@@ -47,11 +56,29 @@ export default function SingleCarPage() {
 
   const fullTitle = `${car.year} ${car.make} ${car.model}`;
 
-  const specs = [
+  const vehicleType = getVehicleType(car.fuel);
+
+  const baseSpecs = [
     { label: 'Mileage', value: `${car.mileage.toLocaleString()} km`, key: 'mileage' },
     { label: 'Transmission', value: car.transmission, key: 'transmission' },
+  ];
+
+  const powertrainSpecs = vehicleType === 'EV' ? [
+    { label: 'Powertrain', value: 'Electric', key: 'fuel' },
+    { label: 'Battery Capacity', value: car.batteryCapacity || 'N/A', key: 'batteryCapacity' },
+    { label: 'Motor Output', value: car.motorOutput || 'N/A', key: 'motorOutput' },
+  ] : vehicleType === 'Hybrid' ? [
     { label: 'Fuel Type', value: car.fuel, key: 'fuel' },
     { label: 'Engine Size', value: car.engineSize, key: 'engineSize' },
+    { label: 'Motor Output', value: car.motorOutput || 'Hybrid Assist', key: 'motorOutput' },
+  ] : [
+    { label: 'Fuel Type', value: car.fuel, key: 'fuel' },
+    { label: 'Engine Size', value: car.engineSize, key: 'engineSize' },
+  ];
+
+  const specs = [
+    ...baseSpecs,
+    ...powertrainSpecs,
     { label: 'Body Type', value: car.bodyType, key: 'bodyType' },
     { label: 'Color', value: car.color, key: 'color' },
     { label: 'Drive Type', value: car.driveType, key: 'driveType' },
@@ -107,9 +134,15 @@ export default function SingleCarPage() {
             <span className="single-car-page__price">{formatPrice(car.price)}</span>
           </div>
 
-          <span className={`single-car-page__source single-car-page__source--${car.source}`}>
-            {car.source === 'api' ? 'API Stock' : 'In-House Stock'}
-          </span>
+          <div className="single-car-page__badges-row">
+            <span className={`single-car-page__source single-car-page__source--${car.source}`}>
+              {car.source === 'api' ? 'API Stock' : 'In-House Stock'}
+            </span>
+            <span className={`single-car-page__vehicle-type single-car-page__vehicle-type--${vehicleType.toLowerCase()}`}>
+              {vehicleType === 'EV' && <Zap size={11} />}
+              {vehicleType}
+            </span>
+          </div>
 
           <div className="single-car-page__specs">
             {specs.map((spec) => {
@@ -124,9 +157,15 @@ export default function SingleCarPage() {
             })}
           </div>
 
-          <Link to="/contact" className="single-car-page__inquire btn btn--cyan btn--full btn--lg">
-            Inquire About This Vehicle
-          </Link>
+          <a
+            href={`${company.social.whatsapp}?text=${encodeURIComponent(`Hi, I'm interested in: ${fullTitle} (Stock ID: ${car.id.toUpperCase()}). Please provide pricing and shipping details.`)}`}
+            className="single-car-page__inquire btn btn--cyan btn--full btn--lg"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <MessageCircle size={16} />
+            Inquire via WhatsApp
+          </a>
 
           <div className="single-car-page__share">
             <span className="single-car-page__share-label">Share:</span>
@@ -170,15 +209,6 @@ export default function SingleCarPage() {
           </table>
         </div>
       </section>
-
-      {car.description && (
-        <section className="section section--white">
-          <div className="wrap">
-            <h2 style={{ marginBottom: 'var(--space-md)' }}>Description</h2>
-            <p className="single-car-page__description">{car.description}</p>
-          </div>
-        </section>
-      )}
 
       <section className="section section--light">
         <div className="wrap">
