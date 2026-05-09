@@ -1,58 +1,101 @@
-import { useState, useMemo } from 'react';
-import { Calendar, MapPin, Package, Globe, TrendingUp, PenLine, Star, Send, X } from 'lucide-react';
+import { useState } from 'react';
+import { Calendar, MapPin, Package, Globe, TrendingUp, PenLine, Star, Send, X, AlertTriangle } from 'lucide-react';
 import PageTitle from '../components/PageTitle';
 import StatsStrip from '../components/StatsStrip';
 import CTABanner from '../components/CTABanner';
-import { deliveredCars } from '../data/company';
+import Loading from '../components/Loading';
+import ErrorState from '../components/ErrorState';
+import { useApi } from '../hooks/useApi';
+import { listDeliveredCars } from '../api/delivered';
+import { submitReview } from '../api/reviews';
+import { ApiError } from '../api/client';
 import './DeliveredPage.css';
-
-const deliveryStats = [
-  { icon: Package, value: String(12), label: "Total Deliveries" },
-  { icon: Globe, value: "10", label: "Countries" },
-  { icon: TrendingUp, value: "8", label: "Delivered This Year" },
-];
 
 export default function DeliveredPage() {
   const [yearFilter, setYearFilter] = useState('');
   const [countryFilter, setCountryFilter] = useState('');
   const [showReviewForm, setShowReviewForm] = useState(false);
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [reviewError, setReviewError] = useState(null);
+  const [reviewFieldErrors, setReviewFieldErrors] = useState({});
   const [reviewForm, setReviewForm] = useState({ name: '', country: '', vehicle: '', rating: 5, review: '' });
+
+  const { data, loading, error, refetch } = useApi(
+    (signal) => listDeliveredCars({
+      year: yearFilter || undefined,
+      country: countryFilter || undefined,
+      per_page: 50,
+    }, { signal }),
+    [yearFilter, countryFilter],
+  );
+
+  const filtered = data?.data || [];
+  const facets = data?.facets || { countries: [], years: [] };
+
+  const deliveryStats = [
+    { icon: Package, value: String(data?.meta?.pagination?.total ?? filtered.length), label: 'Total Deliveries' },
+    { icon: Globe, value: String((facets.countries || []).length), label: 'Countries' },
+    {
+      icon: TrendingUp,
+      value: String(filtered.filter((d) => d.deliveryDate && new Date(d.deliveryDate).getFullYear() === new Date().getFullYear()).length),
+      label: 'Delivered This Year',
+    },
+  ];
 
   const handleReviewChange = (e) => {
     setReviewForm({ ...reviewForm, [e.target.name]: e.target.value });
+    if (reviewFieldErrors[e.target.name]) {
+      const next = { ...reviewFieldErrors };
+      delete next[e.target.name];
+      setReviewFieldErrors(next);
+    }
   };
 
-  const handleReviewSubmit = (e) => {
+  const handleReviewSubmit = async (e) => {
     e.preventDefault();
-    setReviewSubmitted(true);
+    setReviewSubmitting(true);
+    setReviewError(null);
+    setReviewFieldErrors({});
+    try {
+      await submitReview({
+        name: reviewForm.name,
+        country: reviewForm.country,
+        vehicle: reviewForm.vehicle,
+        rating: reviewForm.rating,
+        review: reviewForm.review,
+      });
+      setReviewSubmitted(true);
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 422 && err.errors) {
+        const next = {};
+        for (const [field, msgs] of Object.entries(err.errors)) {
+          if (Array.isArray(msgs) && msgs.length > 0) next[field] = msgs[0];
+        }
+        setReviewFieldErrors(next);
+        setReviewError('Please correct the highlighted fields.');
+      } else if (err instanceof ApiError) {
+        setReviewError(err.message || 'We could not submit your review. Please try again.');
+      } else {
+        setReviewError('We could not submit your review. Please try again.');
+      }
+    } finally {
+      setReviewSubmitting(false);
+    }
   };
 
   const closeReviewForm = () => {
     setShowReviewForm(false);
     setReviewSubmitted(false);
+    setReviewError(null);
+    setReviewFieldErrors({});
     setReviewForm({ name: '', country: '', vehicle: '', rating: 5, review: '' });
   };
 
-  const years = [...new Set(deliveredCars.map((d) => new Date(d.deliveryDate).getFullYear()))].sort((a, b) => b - a);
-  const countries = [...new Set(deliveredCars.map((d) => d.destination))].sort();
-
-  const filtered = useMemo(() => {
-    let result = [...deliveredCars];
-
-    if (yearFilter) {
-      result = result.filter((d) => new Date(d.deliveryDate).getFullYear() === parseInt(yearFilter));
-    }
-
-    if (countryFilter) {
-      result = result.filter((d) => d.destination === countryFilter);
-    }
-
-    return result;
-  }, [yearFilter, countryFilter]);
-
   const formatDate = (dateStr) => {
+    if (!dateStr) return '';
     const d = new Date(dateStr);
+    if (Number.isNaN(d.getTime())) return '';
     return d.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
   };
 
@@ -72,7 +115,7 @@ export default function DeliveredPage() {
               className="delivered-page__select"
             >
               <option value="">All Years</option>
-              {years.map((y) => (
+              {(facets.years || []).map((y) => (
                 <option key={y} value={y}>{y}</option>
               ))}
             </select>
@@ -83,7 +126,7 @@ export default function DeliveredPage() {
               className="delivered-page__select"
             >
               <option value="">All Countries</option>
-              {countries.map((c) => (
+              {(facets.countries || []).map((c) => (
                 <option key={c} value={c}>{c}</option>
               ))}
             </select>
@@ -95,45 +138,53 @@ export default function DeliveredPage() {
 
       <section className="section section--light">
         <div className="wrap">
-          <div className="delivered-page__grid">
-            {filtered.map((del) => (
-              <div key={del.id} className="delivered-card">
-                <div className="delivered-card__image-wrap">
-                  <div className="delivered-card__image-ratio">
-                    <img src={del.image} alt={`${del.year} ${del.make} ${del.model}`} loading="lazy" />
+          {loading ? (
+            <Loading label="Loading deliveries…" />
+          ) : error ? (
+            <ErrorState onRetry={refetch} />
+          ) : (
+            <>
+              <div className="delivered-page__grid">
+                {filtered.map((del) => (
+                  <div key={del.id} className="delivered-card">
+                    <div className="delivered-card__image-wrap">
+                      <div className="delivered-card__image-ratio">
+                        <img src={del.image} alt={`${del.year} ${del.make} ${del.model}`} loading="lazy" />
+                      </div>
+                    </div>
+                    <div className="delivered-card__body">
+                      <h3 className="delivered-card__title">{del.make} {del.model}</h3>
+                      <span className="delivered-card__year">{del.year}</span>
+
+                      <div className="delivered-card__meta">
+                        <span className="delivered-card__meta-item">
+                          <Calendar size={12} />
+                          {formatDate(del.deliveryDate)}
+                        </span>
+                        <span className="delivered-card__meta-item">
+                          <MapPin size={12} />
+                          {del.destination}
+                        </span>
+                      </div>
+
+                      {del.testimonial && (
+                        <p className="delivered-card__testimonial">"{del.testimonial}"</p>
+                      )}
+
+                      {del.customerName && (
+                        <span className="delivered-card__customer">— {del.customerName}</span>
+                      )}
+                    </div>
                   </div>
-                </div>
-                <div className="delivered-card__body">
-                  <h3 className="delivered-card__title">{del.make} {del.model}</h3>
-                  <span className="delivered-card__year">{del.year}</span>
-
-                  <div className="delivered-card__meta">
-                    <span className="delivered-card__meta-item">
-                      <Calendar size={12} />
-                      {formatDate(del.deliveryDate)}
-                    </span>
-                    <span className="delivered-card__meta-item">
-                      <MapPin size={12} />
-                      {del.destination}
-                    </span>
-                  </div>
-
-                  {del.testimonial && (
-                    <p className="delivered-card__testimonial">"{del.testimonial}"</p>
-                  )}
-
-                  {del.customerName && (
-                    <span className="delivered-card__customer">— {del.customerName}</span>
-                  )}
-                </div>
+                ))}
               </div>
-            ))}
-          </div>
 
-          {filtered.length === 0 && (
-            <div className="delivered-page__empty">
-              <p>No deliveries match your current filters.</p>
-            </div>
+              {filtered.length === 0 && (
+                <div className="delivered-page__empty">
+                  <p>No deliveries match your current filters.</p>
+                </div>
+              )}
+            </>
           )}
         </div>
       </section>
@@ -179,6 +230,16 @@ export default function DeliveredPage() {
                 <p className="review-modal__subtitle">
                   Your review will be published after approval by our team.
                 </p>
+
+                {reviewError && (
+                  <div className="inquiry-form__error" role="alert" style={{ marginBottom: 12 }}>
+                    <AlertTriangle size={16} />
+                    <div className="inquiry-form__error-body">
+                      <strong>{reviewError}</strong>
+                    </div>
+                  </div>
+                )}
+
                 <form className="review-modal__form" onSubmit={handleReviewSubmit}>
                   <div className="review-modal__row">
                     <div className="review-modal__field">
@@ -190,6 +251,7 @@ export default function DeliveredPage() {
                         onChange={handleReviewChange}
                         required
                       />
+                      {reviewFieldErrors.name && <span className="inquiry-form__field-error">{reviewFieldErrors.name}</span>}
                     </div>
                     <div className="review-modal__field">
                       <label>Country *</label>
@@ -200,6 +262,7 @@ export default function DeliveredPage() {
                         onChange={handleReviewChange}
                         required
                       />
+                      {reviewFieldErrors.country && <span className="inquiry-form__field-error">{reviewFieldErrors.country}</span>}
                     </div>
                   </div>
                   <div className="review-modal__field">
@@ -211,6 +274,7 @@ export default function DeliveredPage() {
                       onChange={handleReviewChange}
                       placeholder="e.g. 2023 Toyota Land Cruiser"
                     />
+                    {reviewFieldErrors.vehicle && <span className="inquiry-form__field-error">{reviewFieldErrors.vehicle}</span>}
                   </div>
                   <div className="review-modal__field">
                     <label>Rating *</label>
@@ -226,6 +290,7 @@ export default function DeliveredPage() {
                         </button>
                       ))}
                     </div>
+                    {reviewFieldErrors.rating && <span className="inquiry-form__field-error">{reviewFieldErrors.rating}</span>}
                   </div>
                   <div className="review-modal__field">
                     <label>Your Review *</label>
@@ -237,10 +302,15 @@ export default function DeliveredPage() {
                       rows={4}
                       placeholder="Tell us about your experience..."
                     />
+                    {reviewFieldErrors.text && <span className="inquiry-form__field-error">{reviewFieldErrors.text}</span>}
                   </div>
-                  <button type="submit" className="btn btn--primary btn--full btn--lg">
+                  <button
+                    type="submit"
+                    className="btn btn--primary btn--full btn--lg"
+                    disabled={reviewSubmitting}
+                  >
                     <Send size={16} />
-                    Submit Review
+                    {reviewSubmitting ? 'Submitting…' : 'Submit Review'}
                   </button>
                 </form>
               </>

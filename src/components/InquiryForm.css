@@ -79,6 +79,49 @@
   color: #777;
 }
 
+.inquiry-form__error {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 14px 16px;
+  background: #fbf6f6;
+  border: 1px solid #e9d8d8;
+  color: #7a3030;
+  border-radius: 4px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.inquiry-form__error-body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.inquiry-form__error-body strong {
+  font-weight: 600;
+}
+
+.inquiry-form__error-body span {
+  color: #5a4040;
+  font-weight: 300;
+}
+
+.inquiry-form__error-body a {
+  color: var(--primary);
+  text-decoration: underline;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.inquiry-form__field-error {
+  font-size: 11px;
+  color: #c0392b;
+  font-weight: 400;
+  margin-top: 2px;
+}
+
 @media (max-width: 768px) {
   .inquiry-form__row {
     grid-template-columns: 1fr;

@@ -1,5 +1,7 @@
 import { useState } from 'react';
-import { Send } from 'lucide-react';
+import { Send, AlertTriangle, MessageCircle } from 'lucide-react';
+import { submitInquiry } from '../api/inquiries';
+import { ApiError } from '../api/client';
 import './InquiryForm.css';
 
 const countries = [
@@ -21,7 +23,11 @@ const inquiryTypes = [
   "After-Sales Support"
 ];
 
-export default function InquiryForm({ carReference }) {
+const WHATSAPP_FALLBACK = 'https://wa.me/81459496777';
+
+export default function InquiryForm({ carReference, carId, source }) {
+  const defaultSource = source || (carReference ? 'single_car' : 'contact_page');
+
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -32,28 +38,58 @@ export default function InquiryForm({ carReference }) {
   });
 
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
+  const [fieldErrors, setFieldErrors] = useState({});
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
+    if (fieldErrors[e.target.name]) {
+      const next = { ...fieldErrors };
+      delete next[e.target.name];
+      setFieldErrors(next);
+    }
   };
-
-  const [submitting, setSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setSubmitting(true);
+    setSubmitError(null);
+    setFieldErrors({});
+
     try {
-      const res = await fetch('/api/inquiry', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+      await submitInquiry({
+        name: form.name,
+        email: form.email,
+        phone: form.phone,
+        country: form.country,
+        inquiryType: form.inquiryType,
+        message: form.message,
+        source: defaultSource,
+        car_id: carId,
+        carReference,
       });
-      if (!res.ok) throw new Error('Failed');
-    } catch {
-      // Form still shows success — backend will be connected later
+      setSubmitted(true);
+    } catch (err) {
+      if (err instanceof ApiError && err.status === 422 && err.errors) {
+        // Field-level validation errors. The PRD guarantees errors is
+        // {field: [messages]}. We collapse to first message per field.
+        const next = {};
+        for (const [field, msgs] of Object.entries(err.errors)) {
+          if (Array.isArray(msgs) && msgs.length > 0) {
+            next[field] = msgs[0];
+          }
+        }
+        setFieldErrors(next);
+        setSubmitError('Please correct the highlighted fields.');
+      } else if (err instanceof ApiError) {
+        setSubmitError(err.message || 'We could not send your inquiry. Please try again.');
+      } else {
+        setSubmitError('We could not send your inquiry. Please try again.');
+      }
+    } finally {
+      setSubmitting(false);
     }
-    setSubmitting(false);
-    setSubmitted(true);
   };
 
   if (submitted) {
@@ -66,7 +102,24 @@ export default function InquiryForm({ carReference }) {
   }
 
   return (
-    <form className="inquiry-form" onSubmit={handleSubmit}>
+    <form className="inquiry-form" onSubmit={handleSubmit} noValidate>
+      {submitError && (
+        <div className="inquiry-form__error" role="alert">
+          <AlertTriangle size={16} />
+          <div className="inquiry-form__error-body">
+            <strong>{submitError}</strong>
+            <span>
+              Trouble reaching us? Message us on{' '}
+              <a href={WHATSAPP_FALLBACK} target="_blank" rel="noopener noreferrer">
+                <MessageCircle size={12} />
+                WhatsApp
+              </a>{' '}
+              instead.
+            </span>
+          </div>
+        </div>
+      )}
+
       <div className="inquiry-form__row">
         <div className="inquiry-form__field">
           <label className="inquiry-form__label">Name *</label>
@@ -78,6 +131,7 @@ export default function InquiryForm({ carReference }) {
             required
             className="inquiry-form__input"
           />
+          {fieldErrors.name && <span className="inquiry-form__field-error">{fieldErrors.name}</span>}
         </div>
         <div className="inquiry-form__field">
           <label className="inquiry-form__label">Email *</label>
@@ -89,6 +143,7 @@ export default function InquiryForm({ carReference }) {
             required
             className="inquiry-form__input"
           />
+          {fieldErrors.email && <span className="inquiry-form__field-error">{fieldErrors.email}</span>}
         </div>
       </div>
 
@@ -103,6 +158,7 @@ export default function InquiryForm({ carReference }) {
             required
             className="inquiry-form__input"
           />
+          {fieldErrors.phone && <span className="inquiry-form__field-error">{fieldErrors.phone}</span>}
         </div>
         <div className="inquiry-form__field">
           <label className="inquiry-form__label">Country</label>
@@ -117,6 +173,7 @@ export default function InquiryForm({ carReference }) {
               <option key={c} value={c}>{c}</option>
             ))}
           </select>
+          {fieldErrors.country && <span className="inquiry-form__field-error">{fieldErrors.country}</span>}
         </div>
       </div>
 
@@ -145,6 +202,7 @@ export default function InquiryForm({ carReference }) {
           rows={5}
           className="inquiry-form__textarea"
         />
+        {fieldErrors.message && <span className="inquiry-form__field-error">{fieldErrors.message}</span>}
       </div>
 
       <button type="submit" className="inquiry-form__submit btn btn--primary btn--full btn--lg" disabled={submitting}>
