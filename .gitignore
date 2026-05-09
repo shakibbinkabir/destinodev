@@ -1,8 +1,11 @@
 node_modules/
 dist/
-server/*.db
-server/*.db-wal
-server/*.db-shm
+
+# .env.local stays out of git; .env.development and .env.production are
+# committed because they hold no secrets — only the public API base URL
+# and brand color tokens.
+.env.local
+.env.*.local
 
 # Laravel backend (defensive — backend/.gitignore is also in place)
 backend/vendor/

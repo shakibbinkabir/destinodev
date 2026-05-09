@@ -1,6 +1,6 @@
 {
+  "_comment": "Vercel deploy is now optional — production target is Hostinger (see docs/deployment.md). The React app is pure static content and talks to the Laravel API at VITE_API_BASE_URL. Only the SPA fallback rewrite is required.",
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" },
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
