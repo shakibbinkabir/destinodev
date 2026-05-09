@@ -110,8 +110,30 @@ The local development seeder also creates `admin@destino.local` (password: `pass
 |---|---|
 | 1 — Foundation | done |
 | 2 — Data layer & admin | done |
-| 3 — Public REST API | not started |
+| 3 — Public REST API | done |
 | 4 — Integrations & pipelines | not started |
 | 5 — Frontend wiring & deploy | not started |
 
 Open blockers: see [`BLOCKERS.md`](BLOCKERS.md).
+
+## Stage 3 endpoints
+
+All public endpoints under `/api/v1`. Default rate limit is 60 req/min/IP at the
+group level; `POST /inquiries` overrides to 10/min/IP and `POST /reviews` to
+5/min/IP. The Postman collection at [`docs/destino-api.postman_collection.json`](docs/destino-api.postman_collection.json)
+is the canonical request reference — open it with `{{base_url}}` defaulting to
+`http://127.0.0.1:8000/api/v1`.
+
+`/exchange-rate`, `/youtube-feed`, and `/shipping-pdf` return 503 stubs and
+will be wired in Stage 4 (PRD §6.4.4–§6.4.6).
+
+`CarResource` field names follow PRD §8.1 snake_case (`body_type`,
+`engine_size`, `drive_type`); the legacy `src/data/cars.js` uses camelCase
+keys, so the Stage 5 React API client maps between the two. `price` is the
+JPY price (from `cars.price_jpy`) and `mileage` is kilometres (from
+`cars.mileage_km`).
+
+Image URLs are resolved by `App\Support\PublicMedia` — legacy seeded rows
+hold absolute Unsplash URLs and pass through unchanged; rows uploaded via
+Filament hold a path under the public disk and are turned into
+`https://<APP_URL>/storage/<path>`.

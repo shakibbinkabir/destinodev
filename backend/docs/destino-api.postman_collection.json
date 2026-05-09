@@ -1,0 +1,243 @@
+{
+    "info": {
+        "name": "Destino API v1",
+        "description": "Public REST API for the Destino car directory. Stage 3 contract per Destino_Backend_PRD.md §8. All responses are JSON with envelope {data, meta?}; errors are {message, errors?}.",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+        "_postman_id": "destino-api-v1"
+    },
+    "variable": [
+        {
+            "key": "base_url",
+            "value": "http://127.0.0.1:8000/api/v1",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "Health",
+            "item": [
+                {
+                    "name": "GET /health",
+                    "request": {
+                        "method": "GET",
+                        "url": {"raw": "{{base_url}}/health", "host": ["{{base_url}}"], "path": ["health"]}
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Cars",
+            "item": [
+                {
+                    "name": "GET /cars (paginated, filterable)",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/cars?page=1&per_page=9&sort=latest",
+                            "host": ["{{base_url}}"],
+                            "path": ["cars"],
+                            "query": [
+                                {"key": "page", "value": "1"},
+                                {"key": "per_page", "value": "9", "description": "default 9, max 50"},
+                                {"key": "sort", "value": "latest", "description": "latest|price_asc|price_desc|year_desc|mileage_asc"},
+                                {"key": "q", "value": "", "disabled": true, "description": "free-text search across make/model/description"},
+                                {"key": "make", "value": "Toyota", "disabled": true},
+                                {"key": "body_type", "value": "SUV", "disabled": true},
+                                {"key": "transmission", "value": "automatic", "disabled": true},
+                                {"key": "fuel", "value": "gasoline", "disabled": true, "description": "gasoline|hybrid|ev|diesel"},
+                                {"key": "year_from", "value": "2020", "disabled": true},
+                                {"key": "year_to", "value": "2024", "disabled": true},
+                                {"key": "price_min", "value": "1000000", "disabled": true},
+                                {"key": "price_max", "value": "20000000", "disabled": true},
+                                {"key": "source", "value": "all", "disabled": true, "description": "all|inhouse|api"},
+                                {"key": "featured", "value": "true", "disabled": true}
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "GET /cars/{id}",
+                    "request": {
+                        "method": "GET",
+                        "url": {"raw": "{{base_url}}/cars/1", "host": ["{{base_url}}"], "path": ["cars", "1"]}
+                    }
+                },
+                {
+                    "name": "GET /cars/{id}/similar",
+                    "request": {
+                        "method": "GET",
+                        "url": {"raw": "{{base_url}}/cars/1/similar", "host": ["{{base_url}}"], "path": ["cars", "1", "similar"]}
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Delivered Cars",
+            "item": [
+                {
+                    "name": "GET /delivered-cars",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/delivered-cars?page=1&per_page=12",
+                            "host": ["{{base_url}}"],
+                            "path": ["delivered-cars"],
+                            "query": [
+                                {"key": "page", "value": "1"},
+                                {"key": "per_page", "value": "12"},
+                                {"key": "country", "value": "Kenya", "disabled": true},
+                                {"key": "year", "value": "2023", "disabled": true}
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Testimonials",
+            "item": [
+                {
+                    "name": "GET /testimonials",
+                    "request": {
+                        "method": "GET",
+                        "url": {
+                            "raw": "{{base_url}}/testimonials",
+                            "host": ["{{base_url}}"],
+                            "path": ["testimonials"],
+                            "query": [
+                                {"key": "featured", "value": "true", "disabled": true}
+                            ]
+                        }
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Inquiries",
+            "item": [
+                {
+                    "name": "POST /inquiries (throttle 10/min/IP)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {"key": "Content-Type", "value": "application/json"},
+                            {"key": "Accept", "value": "application/json"}
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"Jane Doe\",\n  \"email\": \"jane@example.com\",\n  \"phone\": \"+254712345678\",\n  \"country\": \"Kenya\",\n  \"message\": \"Interested in this Land Cruiser. Could you confirm availability and shipping cost to Mombasa?\",\n  \"car_id\": 1,\n  \"car_reference\": null,\n  \"source\": \"single_car\"\n}"
+                        },
+                        "url": {"raw": "{{base_url}}/inquiries", "host": ["{{base_url}}"], "path": ["inquiries"]}
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Reviews",
+            "item": [
+                {
+                    "name": "POST /reviews (throttle 5/min/IP, creates pending testimonial)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {"key": "Content-Type", "value": "application/json"},
+                            {"key": "Accept", "value": "application/json"}
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"name\": \"John Smith\",\n  \"country\": \"UK\",\n  \"vehicle\": \"Toyota Hiace 2022\",\n  \"rating\": 5,\n  \"text\": \"Excellent service from Destino — the vehicle arrived in exactly the condition described and the documentation was flawless.\",\n  \"email\": \"john@example.com\"\n}"
+                        },
+                        "url": {"raw": "{{base_url}}/reviews", "host": ["{{base_url}}"], "path": ["reviews"]}
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Site & content",
+            "item": [
+                {
+                    "name": "GET /settings (5-minute cache)",
+                    "request": {
+                        "method": "GET",
+                        "url": {"raw": "{{base_url}}/settings", "host": ["{{base_url}}"], "path": ["settings"]}
+                    }
+                },
+                {
+                    "name": "GET /page/{slug}",
+                    "request": {
+                        "method": "GET",
+                        "url": {"raw": "{{base_url}}/page/about", "host": ["{{base_url}}"], "path": ["page", "about"]}
+                    }
+                },
+                {
+                    "name": "GET /makes",
+                    "request": {
+                        "method": "GET",
+                        "url": {"raw": "{{base_url}}/makes", "host": ["{{base_url}}"], "path": ["makes"]}
+                    }
+                },
+                {
+                    "name": "GET /body-types",
+                    "request": {
+                        "method": "GET",
+                        "url": {"raw": "{{base_url}}/body-types", "host": ["{{base_url}}"], "path": ["body-types"]}
+                    }
+                },
+                {
+                    "name": "GET /hero-slides",
+                    "request": {
+                        "method": "GET",
+                        "url": {"raw": "{{base_url}}/hero-slides", "host": ["{{base_url}}"], "path": ["hero-slides"]}
+                    }
+                },
+                {
+                    "name": "GET /partners",
+                    "request": {
+                        "method": "GET",
+                        "url": {"raw": "{{base_url}}/partners", "host": ["{{base_url}}"], "path": ["partners"]}
+                    }
+                },
+                {
+                    "name": "GET /services",
+                    "request": {
+                        "method": "GET",
+                        "url": {"raw": "{{base_url}}/services", "host": ["{{base_url}}"], "path": ["services"]}
+                    }
+                },
+                {
+                    "name": "GET /process-steps",
+                    "request": {
+                        "method": "GET",
+                        "url": {"raw": "{{base_url}}/process-steps", "host": ["{{base_url}}"], "path": ["process-steps"]}
+                    }
+                }
+            ]
+        },
+        {
+            "name": "Live data (Stage 4 stubs — currently 503)",
+            "item": [
+                {
+                    "name": "GET /exchange-rate",
+                    "request": {
+                        "method": "GET",
+                        "url": {"raw": "{{base_url}}/exchange-rate", "host": ["{{base_url}}"], "path": ["exchange-rate"]}
+                    }
+                },
+                {
+                    "name": "GET /youtube-feed",
+                    "request": {
+                        "method": "GET",
+                        "url": {"raw": "{{base_url}}/youtube-feed", "host": ["{{base_url}}"], "path": ["youtube-feed"]}
+                    }
+                },
+                {
+                    "name": "GET /shipping-pdf",
+                    "request": {
+                        "method": "GET",
+                        "url": {"raw": "{{base_url}}/shipping-pdf", "host": ["{{base_url}}"], "path": ["shipping-pdf"]}
+                    }
+                }
+            ]
+        }
+    ]
+}
