@@ -38,6 +38,12 @@ Format per entry:
 **What we need:** Final Facebook, Instagram, YouTube, LinkedIn, X URLs. The seeded `social.*` settings store empty strings (the React source had `"#"` placeholders).
 **Impact if not resolved:** The header/footer social icons link to nothing useful. The frontend should hide icons whose URL is empty; if it does not, the change is small.
 
+## 2026-05-09 — YouTube channel ID returns 404
+**Stage:** 4
+**Owner:** Client
+**What we need:** The correct YouTube channel ID for Destino. The PRD §11 and `.env.example` set `YOUTUBE_CHANNEL_ID=UC9r_ugFs9RL4OkeEAwztQ7g`, but `https://www.youtube.com/feeds/videos.xml?channel_id=UC9r_ugFs9RL4OkeEAwztQ7g` returns HTTP 404 from YouTube on 2026-05-09. The proxy endpoint (`/api/v1/youtube-feed`) is wired correctly and gracefully falls back to last_known on failure; with no last_known cached value the endpoint returns 503 to the public client.
+**Impact if not resolved:** The homepage YouTube section will fall back to its empty/error state on the React side. No code changes are required to fix once the correct channel ID lands — only a env update + cache flush.
+
 ## 2026-05-09 — One-Price Stock API documentation pending
 **Stage:** 4
 **Owner:** Client / vendor (One-Price Stock)

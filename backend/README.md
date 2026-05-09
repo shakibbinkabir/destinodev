@@ -111,10 +111,28 @@ The local development seeder also creates `admin@destino.local` (password: `pass
 | 1 — Foundation | done |
 | 2 — Data layer & admin | done |
 | 3 — Public REST API | done |
-| 4 — Integrations & pipelines | not started |
+| 4 — Integrations & pipelines | done |
 | 5 — Frontend wiring & deploy | not started |
 
 Open blockers: see [`BLOCKERS.md`](BLOCKERS.md).
+
+## Production cron
+
+A single Hostinger cron entry is the only scheduled job that needs to be
+configured at the OS level. Everything else lives in `routes/console.php`:
+
+```
+* * * * * cd /home/<user>/domains/api.destinocojp.com/<laravel-root> && php artisan schedule:run >> /dev/null 2>&1
+```
+
+The Laravel scheduler then runs:
+
+| Schedule | Command | Purpose |
+|---|---|---|
+| every minute | `queue:work --stop-when-empty --tries=3` | Drains the database queue (inquiry / review mails). `--stop-when-empty` keeps the worker short-lived so we do not need a long-running supervisor on shared hosting. |
+| hourly | `stock:sync` | Reconciles the One-Price Stock catalog into `cars` / `car_images`. No-ops gracefully when API credentials are unset (`CHANGE_ME_*`). |
+
+Verify the schedule is registered with `php artisan schedule:list`.
 
 ## Stage 3 endpoints
 
@@ -124,8 +142,17 @@ group level; `POST /inquiries` overrides to 10/min/IP and `POST /reviews` to
 is the canonical request reference — open it with `{{base_url}}` defaulting to
 `http://127.0.0.1:8000/api/v1`.
 
-`/exchange-rate`, `/youtube-feed`, and `/shipping-pdf` return 503 stubs and
-will be wired in Stage 4 (PRD §6.4.4–§6.4.6).
+## Stage 4 integrations
+
+| Pipeline | Where it lives | Status |
+|---|---|---|
+| Inquiry email pipeline | `App\Mail\NewInquiryNotification` + `CustomerInquiryConfirmation`, dispatched from `InquiriesController::store` via `Mail::queue()`. Brand color `#32498F` applied via the published mail vendor theme. | working |
+| Review moderation pipeline | `App\Mail\PendingReviewNotification` queued from `ReviewsController::store`; `TestimonialResource` exposes per-row + bulk Approve / Reject with confirmation modals. | working |
+| Exchange-rate proxy | `GET /api/v1/exchange-rate` → `App\Services\ExchangeRateService` (12 h fresh cache, forever last-known fallback, 503 only when both fail). | working |
+| YouTube feed proxy | `GET /api/v1/youtube-feed` → `App\Services\YouTubeFeedService` (1 h fresh cache, forever last-known fallback). | working |
+| One-Price Stock sync | `php artisan stock:sync` (hourly), `App\Services\OnePriceStockService`. Implemented against a stub shape pending vendor docs — see `BLOCKERS.md`. No-ops when credentials are placeholders. | stub (pending API docs) |
+| Shipping PDF | `GET /api/v1/shipping-pdf` redirects 302 to `extras.shipping_pdf_path` on the `shipping` page row, 404 otherwise. PDF uploaded via the Filament Page editor. | working |
+| Queue worker | `queue:work --stop-when-empty --tries=3` scheduled every minute (see Production cron above). | working |
 
 `CarResource` field names follow PRD §8.1 snake_case (`body_type`,
 `engine_size`, `drive_type`); the legacy `src/data/cars.js` uses camelCase
