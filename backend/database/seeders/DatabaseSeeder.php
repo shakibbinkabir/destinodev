@@ -2,24 +2,28 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
-    /**
-     * Seed the application's database.
-     */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $this->call([
+            // Order matters: Shield's permission rows are created by
+            // shield:generate and must exist before role sync runs.
+            ShieldSeeder::class,
+            RolesAndAdminSeeder::class,
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+            // Public-facing content
+            CarsSeeder::class,
+            DeliveredCarsSeeder::class,
+            TestimonialsSeeder::class,
+            PageContentsSeeder::class,
+            HeroSlidesSeeder::class,
+            PartnersSeeder::class,
+            ServicesSeeder::class,
+            ProcessStepsSeeder::class,
+            SettingsSeeder::class,
         ]);
     }
 }
