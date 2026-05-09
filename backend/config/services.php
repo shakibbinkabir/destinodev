@@ -35,4 +35,17 @@ return [
         ],
     ],
 
+    'exchange_rate' => [
+        'key' => env('EXCHANGE_RATE_API_KEY'),
+    ],
+
+    'youtube' => [
+        'channel_id' => env('YOUTUBE_CHANNEL_ID', 'UC9r_ugFs9RL4OkeEAwztQ7g'),
+    ],
+
+    'one_price_stock' => [
+        'url' => env('ONE_PRICE_STOCK_API_URL'),
+        'key' => env('ONE_PRICE_STOCK_API_KEY'),
+    ],
+
 ];
