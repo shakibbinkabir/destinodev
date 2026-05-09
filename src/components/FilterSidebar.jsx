@@ -1,7 +1,11 @@
 import { useState } from 'react';
 import { ChevronDown, ChevronUp, X } from 'lucide-react';
-import { makes, bodyTypes, fuelTypes, yearRange } from '../data/makes';
+import { useApi } from '../hooks/useApi';
+import { getMakes, getBodyTypes } from '../api/site';
 import './FilterSidebar.css';
+
+const FUEL_TYPES = ['Petrol', 'Diesel', 'Hybrid', 'Electric'];
+const YEAR_RANGE = { min: 2018, max: new Date().getFullYear() };
 
 export default function FilterSidebar({ filters, setFilters, onApply, onClear, isOpen, onClose }) {
   const [openSections, setOpenSections] = useState({
@@ -12,6 +16,12 @@ export default function FilterSidebar({ filters, setFilters, onApply, onClear, i
     transmission: true,
     fuel: true,
   });
+
+  const { data: makesData } = useApi((signal) => getMakes({ signal }), []);
+  const { data: bodyTypesData } = useApi((signal) => getBodyTypes({ signal }), []);
+
+  const makes = makesData || [];
+  const bodyTypes = bodyTypesData || [];
 
   const toggleSection = (section) => {
     setOpenSections((prev) => ({ ...prev, [section]: !prev[section] }));
@@ -26,7 +36,7 @@ export default function FilterSidebar({ filters, setFilters, onApply, onClear, i
   };
 
   const years = [];
-  for (let y = yearRange.max; y >= yearRange.min; y--) years.push(y);
+  for (let y = YEAR_RANGE.max; y >= YEAR_RANGE.min; y--) years.push(y);
 
   return (
     <>
@@ -70,15 +80,14 @@ export default function FilterSidebar({ filters, setFilters, onApply, onClear, i
             {openSections.make && (
               <div className="filter-sidebar__group-body">
                 {makes.map((m) => (
-                  <label key={m.name} className="filter-sidebar__checkbox">
+                  <label key={m} className="filter-sidebar__checkbox">
                     <input
                       type="checkbox"
-                      checked={(filters.makes || []).includes(m.name)}
-                      onChange={() => handleCheckbox('makes', m.name)}
+                      checked={(filters.makes || []).includes(m)}
+                      onChange={() => handleCheckbox('makes', m)}
                     />
                     <span className="filter-sidebar__checkmark" />
-                    <span className="filter-sidebar__checkbox-label">{m.name}</span>
-                    <span className="filter-sidebar__checkbox-count">({m.count})</span>
+                    <span className="filter-sidebar__checkbox-label">{m}</span>
                   </label>
                 ))}
               </div>
@@ -191,7 +200,7 @@ export default function FilterSidebar({ filters, setFilters, onApply, onClear, i
             </button>
             {openSections.fuel && (
               <div className="filter-sidebar__group-body">
-                {fuelTypes.map((f) => (
+                {FUEL_TYPES.map((f) => (
                   <label key={f} className="filter-sidebar__checkbox">
                     <input
                       type="checkbox"

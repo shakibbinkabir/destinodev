@@ -1,8 +1,11 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search } from 'lucide-react';
-import { makes, bodyTypes, yearRange } from '../data/makes';
+import { useApi } from '../hooks/useApi';
+import { getMakes, getBodyTypes } from '../api/site';
 import './SearchBar.css';
+
+const YEAR_RANGE = { min: 2018, max: new Date().getFullYear() };
 
 export default function SearchBar() {
   const navigate = useNavigate();
@@ -13,6 +16,9 @@ export default function SearchBar() {
     priceRange: '',
     transmission: '',
   });
+
+  const { data: makes } = useApi((signal) => getMakes({ signal }), []);
+  const { data: bodyTypes } = useApi((signal) => getBodyTypes({ signal }), []);
 
   const handleChange = (e) => {
     setFilters({ ...filters, [e.target.name]: e.target.value });
@@ -26,10 +32,14 @@ export default function SearchBar() {
     navigate(`/stock?${params.toString()}`);
   };
 
-  const years = [];
-  for (let y = yearRange.max; y >= yearRange.min; y--) {
-    years.push(y);
-  }
+  const years = useMemo(() => {
+    const out = [];
+    for (let y = YEAR_RANGE.max; y >= YEAR_RANGE.min; y--) out.push(y);
+    return out;
+  }, []);
+
+  const makeOptions = makes || [];
+  const bodyTypeOptions = bodyTypes || [];
 
   return (
     <div className="search-bar">
@@ -39,8 +49,8 @@ export default function SearchBar() {
             <label className="search-bar__label">Make</label>
             <select name="make" value={filters.make} onChange={handleChange} className="search-bar__select">
               <option value="">All Makes</option>
-              {makes.map((m) => (
-                <option key={m.name} value={m.name}>{m.name}</option>
+              {makeOptions.map((m) => (
+                <option key={m} value={m}>{m}</option>
               ))}
             </select>
           </div>
@@ -49,7 +59,7 @@ export default function SearchBar() {
             <label className="search-bar__label">Body Type</label>
             <select name="bodyType" value={filters.bodyType} onChange={handleChange} className="search-bar__select">
               <option value="">All Types</option>
-              {bodyTypes.map((t) => (
+              {bodyTypeOptions.map((t) => (
                 <option key={t} value={t}>{t}</option>
               ))}
             </select>

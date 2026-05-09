@@ -1,3 +1,43 @@
+/* External-source banner — managed showcase notice */
+.auction-page__external-banner {
+  background: #fff8e6;
+  border-bottom: 1px solid #f1d99a;
+  padding: 10px 0;
+  font-size: 13px;
+  color: #5a4500;
+}
+
+.auction-page__external-banner-inner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.auction-page__external-banner-inner > svg {
+  color: #b07b00;
+  flex-shrink: 0;
+}
+
+.auction-page__external-banner a {
+  color: #32498F;
+  text-decoration: underline;
+}
+
+.auction-page__external-banner-cta {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #32498F;
+  color: #fff !important;
+  padding: 6px 12px;
+  border-radius: 3px;
+  font-weight: 500;
+  text-decoration: none !important;
+  font-size: 12px;
+}
+
 /* Info bar */
 .auction-page__info-bar {
   background-color: var(--deep);

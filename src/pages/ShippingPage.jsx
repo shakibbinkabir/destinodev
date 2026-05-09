@@ -2,12 +2,25 @@ import { useState } from 'react';
 import { Download, FileText, ExternalLink } from 'lucide-react';
 import PageTitle from '../components/PageTitle';
 import CTABanner from '../components/CTABanner';
+import Loading from '../components/Loading';
+import { useApi } from '../hooks/useApi';
+import { getPage } from '../api/site';
+import { apiBaseUrl } from '../api/client';
 import './ShippingPage.css';
 
-const SHIPPING_PDF_URL = '/api/shipping-info-pdf';
+const SHIPPING_PDF_URL = `${apiBaseUrl()}/shipping-pdf`;
 
 export default function ShippingPage() {
   const [pdfError, setPdfError] = useState(false);
+
+  // Page body is a marketing intro; falls back gracefully if the slug
+  // isn't seeded yet.
+  const pageQuery = useApi(
+    (signal) => getPage('shipping', { signal }).catch(() => null),
+    [],
+  );
+
+  const body = pageQuery.data?.body;
 
   return (
     <div className="shipping-page">
@@ -19,10 +32,13 @@ export default function ShippingPage() {
       <section className="section section--white">
         <div className="wrap">
           <div className="shipping-page__header">
-            <h2>Shipping Guide & Rates</h2>
+            <h2>{pageQuery.data?.title || 'Shipping Guide & Rates'}</h2>
             <p className="shipping-page__subtitle">
-              Download or view our shipping information document for details on rates,
-              transit times, and delivery options to your country.
+              {pageQuery.loading ? (
+                <Loading inline label="Loading…" />
+              ) : (
+                body || 'Download or view our shipping information document for details on rates, transit times, and delivery options to your country.'
+              )}
             </p>
             <a
               href={SHIPPING_PDF_URL}

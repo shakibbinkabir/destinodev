@@ -2,10 +2,34 @@ import { MapPin, Phone, Printer, Mail, MessageCircle, Clock, Youtube, Instagram,
 import PageTitle from '../components/PageTitle';
 import InquiryForm from '../components/InquiryForm';
 import CTABanner from '../components/CTABanner';
-import { company } from '../data/company';
+import { useApi } from '../hooks/useApi';
+import { useSettings, get } from '../hooks/useSettings';
+import { getPage } from '../api/site';
 import './ContactPage.css';
 
+function parseHours(text) {
+  if (!text) return [];
+  return text.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+}
+
 export default function ContactPage() {
+  const { settings } = useSettings();
+  // Body copy lives in page_contents but is optional — most of the contact
+  // surface is settings-driven. Swallow 404 quietly.
+  const pageQuery = useApi((signal) => getPage('contact', { signal }).catch(() => null), []);
+
+  const address = get(settings, 'company.address', '');
+  const phone = get(settings, 'company.phone', '+81-45-949-6777');
+  const fax = get(settings, 'company.fax', '+81-45-482-6444');
+  const email = get(settings, 'company.email', 'export@destino.jp');
+  const whatsapp = get(settings, 'company.whatsapp_url', 'https://wa.me/81459496777');
+  const businessHours = get(settings, 'company.business_hours', '');
+  const youtube = get(settings, 'social.youtube', '#');
+  const instagram = get(settings, 'social.instagram', '#');
+  const facebook = get(settings, 'social.facebook', '#');
+
+  const hourLines = parseHours(businessHours);
+
   return (
     <div className="contact-page">
       <PageTitle
@@ -19,9 +43,11 @@ export default function ContactPage() {
             <div className="contact-page__form-side">
               <h2 style={{ marginBottom: 'var(--space-sm)' }}>Send Us an Inquiry</h2>
               <p style={{ color: '#777', fontWeight: 300, marginBottom: 'var(--space-lg)', fontSize: 14 }}>
-                Fill out the form below and our team will respond within 24 hours during business days.
+                {pageQuery.data?.body
+                  ? pageQuery.data.body
+                  : 'Fill out the form below and our team will respond within 24 hours during business days.'}
               </p>
-              <InquiryForm />
+              <InquiryForm source="contact_page" />
             </div>
 
             <div className="contact-page__info-side">
@@ -31,7 +57,7 @@ export default function ContactPage() {
                 <MapPin size={16} />
                 <div>
                   <strong>Address</strong>
-                  <p>{company.address.full}</p>
+                  <p>{address}</p>
                 </div>
               </div>
 
@@ -39,7 +65,7 @@ export default function ContactPage() {
                 <Phone size={16} />
                 <div>
                   <strong>Phone</strong>
-                  <p><a href={`tel:${company.phone}`}>{company.phone}</a></p>
+                  <p><a href={`tel:${phone}`}>{phone}</a></p>
                 </div>
               </div>
 
@@ -47,7 +73,7 @@ export default function ContactPage() {
                 <Printer size={16} />
                 <div>
                   <strong>Fax</strong>
-                  <p>{company.fax}</p>
+                  <p>{fax}</p>
                 </div>
               </div>
 
@@ -55,11 +81,11 @@ export default function ContactPage() {
                 <Mail size={16} />
                 <div>
                   <strong>Email</strong>
-                  <p><a href={`mailto:${company.email}`}>{company.email}</a></p>
+                  <p><a href={`mailto:${email}`}>{email}</a></p>
                 </div>
               </div>
 
-              <a href={company.social.whatsapp} className="contact-page__whatsapp">
+              <a href={whatsapp} className="contact-page__whatsapp">
                 <MessageCircle size={18} />
                 Chat on WhatsApp
               </a>
@@ -71,18 +97,15 @@ export default function ContactPage() {
                 </h4>
                 <table className="contact-page__hours-table">
                   <tbody>
-                    <tr>
-                      <td>{company.hours.weekday.days}</td>
-                      <td>{company.hours.weekday.time}</td>
-                    </tr>
-                    <tr>
-                      <td>{company.hours.weekend.days}</td>
-                      <td>{company.hours.weekend.time}</td>
-                    </tr>
-                    <tr>
-                      <td>{company.hours.closed}</td>
-                      <td>Closed</td>
-                    </tr>
+                    {hourLines.length > 0 ? (
+                      hourLines.map((line, idx) => (
+                        <tr key={idx}>
+                          <td colSpan={2}>{line}</td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr><td colSpan={2}>—</td></tr>
+                    )}
                   </tbody>
                 </table>
               </div>
@@ -90,13 +113,13 @@ export default function ContactPage() {
               <div className="contact-page__social">
                 <span className="contact-page__social-label">Follow Us</span>
                 <div className="contact-page__social-links">
-                  <a href={company.social.youtube} className="contact-page__social-link" aria-label="YouTube">
+                  <a href={youtube || '#'} className="contact-page__social-link" aria-label="YouTube">
                     <Youtube size={18} />
                   </a>
-                  <a href={company.social.instagram} className="contact-page__social-link" aria-label="Instagram">
+                  <a href={instagram || '#'} className="contact-page__social-link" aria-label="Instagram">
                     <Instagram size={18} />
                   </a>
-                  <a href={company.social.facebook} className="contact-page__social-link" aria-label="Facebook">
+                  <a href={facebook || '#'} className="contact-page__social-link" aria-label="Facebook">
                     <Facebook size={18} />
                   </a>
                 </div>

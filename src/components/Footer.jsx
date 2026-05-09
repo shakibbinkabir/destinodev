@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Youtube, Instagram, Facebook } from 'lucide-react';
-import { company } from '../data/company';
+import { useSettings, get } from '../hooks/useSettings';
 import './Footer.css';
 
 const groupCompanies = [
@@ -32,6 +32,12 @@ const groupCompanies = [
 ];
 
 export default function Footer() {
+  const { settings } = useSettings();
+  const companyName = get(settings, 'company.name', 'DESTINO Corporation');
+  const youtube = get(settings, 'social.youtube', '#');
+  const instagram = get(settings, 'social.instagram', '#');
+  const facebook = get(settings, 'social.facebook', '#');
+
   return (
     <footer className="footer">
       <div className="footer__main wrap">
@@ -39,20 +45,20 @@ export default function Footer() {
           <Link to="/" className="footer__logo">
             <img src="/logo-link.png" alt="DESTINO" className="footer__logo-img" />
           </Link>
-          <p className="footer__tagline">{company.tagline}</p>
+          <p className="footer__tagline">For Those Who Love Import Cars.</p>
           <p className="footer__desc">
-            Japanese used and premium vehicle exporter since {company.established}.
-            Serving clients in {company.countriesServed} countries worldwide from our
+            Japanese used and premium vehicle exporter since 1995.
+            Serving clients in 50+ countries worldwide from our
             headquarters in Yokohama, Japan.
           </p>
           <div className="footer__social">
-            <a href={company.social.youtube} className="footer__social-link" aria-label="YouTube">
+            <a href={youtube || '#'} className="footer__social-link" aria-label="YouTube">
               <Youtube size={16} />
             </a>
-            <a href={company.social.instagram} className="footer__social-link" aria-label="Instagram">
+            <a href={instagram || '#'} className="footer__social-link" aria-label="Instagram">
               <Instagram size={16} />
             </a>
-            <a href={company.social.facebook} className="footer__social-link" aria-label="Facebook">
+            <a href={facebook || '#'} className="footer__social-link" aria-label="Facebook">
               <Facebook size={16} />
             </a>
           </div>
@@ -113,7 +119,7 @@ export default function Footer() {
 
       <div className="footer__bottom">
         <div className="wrap footer__bottom-inner">
-          <p>&copy; {new Date().getFullYear()} {company.name}. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} {companyName}. All rights reserved.</p>
           <p>Member of JUMVEA (Japan Used Motor Vehicle Exporters Association)</p>
         </div>
       </div>

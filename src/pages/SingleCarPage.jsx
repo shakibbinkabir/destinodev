@@ -6,8 +6,12 @@ import {
 import ImageGallery from '../components/ImageGallery';
 import CarCard from '../components/CarCard';
 import InquiryForm from '../components/InquiryForm';
-import { cars } from '../data/cars';
-import { company } from '../data/company';
+import Loading from '../components/Loading';
+import ErrorState from '../components/ErrorState';
+import { useApi } from '../hooks/useApi';
+import { useSettings, get } from '../hooks/useSettings';
+import { ApiError } from '../api/client';
+import { getCar, getSimilarCars } from '../api/cars';
 import './SingleCarPage.css';
 
 const specIcons = {
@@ -33,33 +37,61 @@ function getVehicleType(fuel) {
 
 export default function SingleCarPage() {
   const { id } = useParams();
-  const car = cars.find((c) => c.id === id);
+  const { settings } = useSettings();
+  const whatsappBase = get(settings, 'company.whatsapp_url', 'https://wa.me/81459496777');
 
-  if (!car) {
+  const carQuery = useApi((signal) => getCar(id, { signal }), [id]);
+  const similarQuery = useApi((signal) => getSimilarCars(id, { signal }), [id]);
+
+  if (carQuery.loading) {
     return (
       <div className="single-car-page" style={{ marginTop: 'var(--header-total)' }}>
-        <div className="wrap section text-center">
-          <h2>Vehicle Not Found</h2>
-          <p style={{ marginTop: 8, color: '#777', fontWeight: 300 }}>
-            The vehicle you are looking for may no longer be available.
-          </p>
-          <Link to="/stock" className="btn btn--primary" style={{ marginTop: 20 }}>
-            Browse Stock
-          </Link>
+        <div className="wrap section">
+          <Loading label="Loading vehicle…" />
         </div>
       </div>
     );
   }
 
+  if (carQuery.error) {
+    const isNotFound = carQuery.error instanceof ApiError && carQuery.error.status === 404;
+    if (isNotFound) {
+      return (
+        <div className="single-car-page" style={{ marginTop: 'var(--header-total)' }}>
+          <div className="wrap section text-center">
+            <h2>Vehicle Not Found</h2>
+            <p style={{ marginTop: 8, color: '#777', fontWeight: 300 }}>
+              The vehicle you are looking for may no longer be available.
+            </p>
+            <Link to="/stock" className="btn btn--primary" style={{ marginTop: 20 }}>
+              Browse Stock
+            </Link>
+          </div>
+        </div>
+      );
+    }
+    return (
+      <div className="single-car-page" style={{ marginTop: 'var(--header-total)' }}>
+        <div className="wrap section">
+          <ErrorState onRetry={carQuery.refetch} />
+        </div>
+      </div>
+    );
+  }
+
+  const car = carQuery.data;
+  if (!car) return null;
+
   const formatPrice = (price) =>
     new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(price);
 
   const fullTitle = `${car.year} ${car.make} ${car.model}`;
+  const stockId = String(car.id);
 
   const vehicleType = getVehicleType(car.fuel);
 
   const baseSpecs = [
-    { label: 'Mileage', value: `${car.mileage.toLocaleString()} km`, key: 'mileage' },
+    { label: 'Mileage', value: `${(car.mileage || 0).toLocaleString()} km`, key: 'mileage' },
     { label: 'Transmission', value: car.transmission, key: 'transmission' },
   ];
 
@@ -87,13 +119,14 @@ export default function SingleCarPage() {
     { label: 'Condition', value: car.condition, key: 'condition' },
   ];
 
-  const similar = cars
-    .filter((c) => c.id !== car.id && (c.make === car.make || c.bodyType === car.bodyType))
-    .slice(0, 4);
+  const similar = similarQuery.data || [];
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
   };
+
+  const inquiryMessage = `Hi, I'm interested in: ${fullTitle} (Stock ID: ${stockId}). Please provide pricing and shipping details.`;
+  const whatsappHref = `${whatsappBase}${whatsappBase.includes('?') ? '&' : '?'}text=${encodeURIComponent(inquiryMessage)}`;
 
   return (
     <div className="single-car-page">
@@ -149,7 +182,7 @@ export default function SingleCarPage() {
               const Icon = specIcons[spec.key];
               return (
                 <div key={spec.key} className="single-car-page__spec">
-                  <Icon size={14} className="single-car-page__spec-icon" />
+                  {Icon && <Icon size={14} className="single-car-page__spec-icon" />}
                   <span className="single-car-page__spec-label">{spec.label}</span>
                   <span className="single-car-page__spec-value">{spec.value}</span>
                 </div>
@@ -158,7 +191,7 @@ export default function SingleCarPage() {
           </div>
 
           <a
-            href={`${company.social.whatsapp}?text=${encodeURIComponent(`Hi, I'm interested in: ${fullTitle} (Stock ID: ${car.id.toUpperCase()}). Please provide pricing and shipping details.`)}`}
+            href={whatsappHref}
             className="single-car-page__inquire btn btn--cyan btn--full btn--lg"
             target="_blank"
             rel="noopener noreferrer"
@@ -203,7 +236,7 @@ export default function SingleCarPage() {
               {specs.map((spec) => (
                 <tr key={spec.key}><td>{spec.label}</td><td>{spec.value}</td></tr>
               ))}
-              <tr><td>Stock ID</td><td>{car.id.toUpperCase()}</td></tr>
+              <tr><td>Stock ID</td><td>{stockId}</td></tr>
               <tr><td>Source</td><td>{car.source === 'api' ? 'API Stock' : 'In-House Stock'}</td></tr>
             </tbody>
           </table>
@@ -214,7 +247,7 @@ export default function SingleCarPage() {
         <div className="wrap">
           <h2 style={{ marginBottom: 'var(--space-lg)' }}>Quick Inquiry</h2>
           <div style={{ maxWidth: 700 }}>
-            <InquiryForm carReference={fullTitle} />
+            <InquiryForm carReference={fullTitle} carId={car.id} source="single_car" />
           </div>
         </div>
       </section>

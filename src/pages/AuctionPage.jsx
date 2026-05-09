@@ -1,10 +1,14 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Gavel, Eye, Clock, Users, ChevronDown, ChevronUp, AlertTriangle } from 'lucide-react';
+import { Gavel, Eye, Clock, Users, ChevronDown, ChevronUp, AlertTriangle, ExternalLink } from 'lucide-react';
 import PageTitle from '../components/PageTitle';
 import ExchangeRate from '../components/ExchangeRate';
 import CTABanner from '../components/CTABanner';
 import { auctions } from '../data/auctions';
 import './AuctionPage.css';
+
+// Auctions are managed at autobidjp.com per PRD §15. The internal page
+// remains on its existing static showcase data; the banner below points
+// users to live lots until the client picks a final disposition.
 
 function formatJPY(amount) {
   return '¥' + amount.toLocaleString();
@@ -199,6 +203,28 @@ export default function AuctionPage() {
         title="Live Auctions"
         breadcrumbs={[{ label: 'Live Auctions' }]}
       />
+
+      <div className="auction-page__external-banner">
+        <div className="wrap auction-page__external-banner-inner">
+          <AlertTriangle size={16} />
+          <span>
+            Auctions are managed at{' '}
+            <a href="https://autobidjp.com" target="_blank" rel="noopener noreferrer">
+              autobidjp.com
+            </a>
+            {' '}— click to view live lots.
+          </span>
+          <a
+            href="https://autobidjp.com"
+            className="auction-page__external-banner-cta"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <ExternalLink size={13} />
+            Open AutoBid JP
+          </a>
+        </div>
+      </div>
 
       <div className="auction-page__info-bar">
         <div className="wrap auction-page__info-bar-inner">

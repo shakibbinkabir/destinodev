@@ -3,12 +3,16 @@ import { Link, NavLink } from 'react-router-dom';
 import { Menu, X, Phone, Gavel, LogIn, Ship } from 'lucide-react';
 import JapanClock from './JapanClock';
 import ExchangeRate from './ExchangeRate';
-import { company } from '../data/company';
+import { useSettings, get } from '../hooks/useSettings';
 import './Header.css';
 
 export default function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const { settings } = useSettings();
+
+  const phone = get(settings, 'company.phone', '+81-45-949-6777');
+  const whatsapp = get(settings, 'company.whatsapp_url', 'https://wa.me/81459496777');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -38,9 +42,9 @@ export default function Header() {
             <ExchangeRate variant="compact" />
           </div>
           <div className="header-topbar__right">
-            <a href="tel:+81-45-949-6777" className="header-topbar__phone">
+            <a href={`tel:${phone}`} className="header-topbar__phone">
               <Phone size={12} />
-              +81-45-949-6777
+              {phone}
             </a>
           </div>
         </div>
@@ -72,7 +76,7 @@ export default function Header() {
               <LogIn size={14} />
               Login
             </a>
-            <a href={company.social.whatsapp} className="header__cta btn btn--cyan" target="_blank" rel="noopener noreferrer">Get a Quote</a>
+            <a href={whatsapp} className="header__cta btn btn--cyan" target="_blank" rel="noopener noreferrer">Get a Quote</a>
           </div>
 
           <button

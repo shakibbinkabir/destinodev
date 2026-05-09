@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { TrendingUp, RefreshCw } from 'lucide-react';
+import { getExchangeRate } from '../api/site';
 import './ExchangeRate.css';
 
 export default function ExchangeRate({ variant = 'compact' }) {
@@ -7,30 +8,33 @@ export default function ExchangeRate({ variant = 'compact' }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
-  const fetchRate = async () => {
+  const fetchRate = useCallback(async (signal) => {
     try {
       setLoading(true);
       setError(false);
-      const res = await fetch('/api/exchange-rate');
-      const json = await res.json();
-
-      if (json.success) {
-        setRate(json.data);
+      const data = await getExchangeRate({ signal });
+      if (data && Number.isFinite(data.rate)) {
+        setRate(data);
       } else {
         setError(true);
       }
-    } catch {
+    } catch (e) {
+      if (e && e.name === 'AbortError') return;
       setError(true);
     } finally {
       setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
-    fetchRate();
-    const interval = setInterval(fetchRate, 30 * 60 * 1000);
-    return () => clearInterval(interval);
-  }, []);
+    const controller = new AbortController();
+    fetchRate(controller.signal);
+    const interval = setInterval(() => fetchRate(controller.signal), 30 * 60 * 1000);
+    return () => {
+      controller.abort();
+      clearInterval(interval);
+    };
+  }, [fetchRate]);
 
   if (loading && !rate) {
     return (
@@ -50,7 +54,7 @@ export default function ExchangeRate({ variant = 'compact' }) {
 
   if (!rate) return null;
 
-  const jpyFormatted = rate.jpyRate.toFixed(2);
+  const jpyFormatted = Number(rate.rate).toFixed(2);
 
   if (variant === 'compact') {
     return (
@@ -68,7 +72,7 @@ export default function ExchangeRate({ variant = 'compact' }) {
           <TrendingUp size={16} />
           <h4 className="exchange-rate__title">Exchange Rate</h4>
         </div>
-        <button className="exchange-rate__refresh" onClick={fetchRate} aria-label="Refresh rate">
+        <button className="exchange-rate__refresh" onClick={() => fetchRate()} aria-label="Refresh rate">
           <RefreshCw size={14} />
         </button>
       </div>
@@ -78,7 +82,7 @@ export default function ExchangeRate({ variant = 'compact' }) {
         </div>
       </div>
       <div className="exchange-rate__footer">
-        <span className="exchange-rate__source">via ExchangeRate-API</span>
+        <span className="exchange-rate__source">via ExchangeRate-API{rate.stale ? ' (cached)' : ''}</span>
       </div>
     </div>
   );

@@ -8,16 +8,19 @@ import ProcessSteps from '../components/ProcessSteps';
 import TestimonialSlider from '../components/TestimonialSlider';
 import CTABanner from '../components/CTABanner';
 import Partners from '../components/Partners';
-import { cars } from '../data/cars';
+import Loading from '../components/Loading';
+import ErrorState from '../components/ErrorState';
+import { useApi } from '../hooks/useApi';
+import { useSettings, get } from '../hooks/useSettings';
+import { listCars } from '../api/cars';
+import { getHeroSlides, getYouTubeFeed } from '../api/site';
 import './HomePage.css';
 
-const heroImages = [
+const FALLBACK_HERO_IMAGES = [
   'https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=1600&h=900&fit=crop',
   'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1600&h=900&fit=crop',
   'https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1600&h=900&fit=crop',
 ];
-
-const CHANNEL_URL = 'https://www.youtube.com/channel/UC9r_ugFs9RL4OkeEAwztQ7g';
 
 const usps = [
   {
@@ -44,26 +47,37 @@ const usps = [
 
 export default function HomePage() {
   const [heroIndex, setHeroIndex] = useState(0);
-  const [videos, setVideos] = useState([]);
+
+  const { settings } = useSettings();
+  const channelId = get(settings, 'integrations.youtube_channel_id', 'UC9r_ugFs9RL4OkeEAwztQ7g');
+  const channelUrl = `https://www.youtube.com/channel/${channelId}`;
+
+  const heroQuery = useApi((signal) => getHeroSlides({ signal }), []);
+  const featuredQuery = useApi(
+    (signal) => listCars({ featured: true, per_page: 6 }, { signal }),
+    [],
+  );
+  const recentQuery = useApi(
+    (signal) => listCars({ sort: 'latest', per_page: 4 }, { signal }),
+    [],
+  );
+  const youtubeQuery = useApi((signal) => getYouTubeFeed({ signal }), []);
+
+  const heroImages = (heroQuery.data && heroQuery.data.length > 0)
+    ? heroQuery.data.map((s) => s.image).filter(Boolean)
+    : FALLBACK_HERO_IMAGES;
 
   useEffect(() => {
+    if (heroImages.length <= 1) return undefined;
     const interval = setInterval(() => {
       setHeroIndex((prev) => (prev + 1) % heroImages.length);
     }, 5000);
     return () => clearInterval(interval);
-  }, []);
+  }, [heroImages.length]);
 
-  useEffect(() => {
-    fetch('/api/youtube-feed')
-      .then((res) => res.json())
-      .then((json) => {
-        if (json.success) setVideos(json.data.videos.slice(0, 3));
-      })
-      .catch(() => {});
-  }, []);
-
-  const featured = cars.filter((c) => c.featured).slice(0, 6);
-  const recent = cars.slice(-4).reverse();
+  const featured = featuredQuery.data?.data || [];
+  const recent = recentQuery.data?.data || [];
+  const videos = (youtubeQuery.data?.videos || []).slice(0, 3);
 
   return (
     <div className="home-page">
@@ -112,11 +126,17 @@ export default function HomePage() {
               View All <ArrowRight size={14} />
             </Link>
           </div>
-          <div className="grid-3">
-            {featured.map((car) => (
-              <CarCard key={car.id} car={car} />
-            ))}
-          </div>
+          {featuredQuery.loading ? (
+            <Loading label="Loading featured vehicles…" />
+          ) : featuredQuery.error ? (
+            <ErrorState onRetry={featuredQuery.refetch} />
+          ) : (
+            <div className="grid-3">
+              {featured.map((car) => (
+                <CarCard key={car.id} car={car} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -183,11 +203,17 @@ export default function HomePage() {
               Browse All <ArrowRight size={14} />
             </Link>
           </div>
-          <div className="grid-4">
-            {recent.map((car) => (
-              <CarCard key={car.id} car={car} />
-            ))}
-          </div>
+          {recentQuery.loading ? (
+            <Loading label="Loading recent vehicles…" />
+          ) : recentQuery.error ? (
+            <ErrorState onRetry={recentQuery.refetch} />
+          ) : (
+            <div className="grid-4">
+              {recent.map((car) => (
+                <CarCard key={car.id} car={car} />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -203,7 +229,7 @@ export default function HomePage() {
             <div className="section-header">
               <h2>From Our Channel</h2>
               <a
-                href={CHANNEL_URL}
+                href={channelUrl}
                 className="section-header__link"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -222,7 +248,7 @@ export default function HomePage() {
                 >
                   <div className="home-video__thumb">
                     <img
-                      src={`https://img.youtube.com/vi/${video.videoId}/mqdefault.jpg`}
+                      src={video.thumbnail || `https://img.youtube.com/vi/${video.videoId}/mqdefault.jpg`}
                       alt={video.title}
                       loading="lazy"
                     />

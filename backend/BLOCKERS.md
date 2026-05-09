@@ -77,3 +77,10 @@ Assumed item shape (mirrors PRD §7.1 column names):
 ```
 
 Assumed transport: bearer-token auth in the `Authorization` header (`Http::withToken(...)`), and either a flat list or one wrapped under `data` / `items` / `results`.
+
+## 2026-05-09 — AuctionPage final disposition
+**Stage:** 5
+**Owner:** Client
+**What we need:** A decision on the `/auction` page per PRD §15: (a) keep as a static "managed showcase" of upcoming/closed lots editable from admin (adds an `auction_lots` table + Filament resource), (b) replace with a hero block linking out to autobidjp.com, or (c) drop from navigation entirely.
+**Impact if not resolved:** Stage 5 left the page on its existing static `src/data/auctions.js` data and added a banner reading "Auctions are managed at autobidjp.com — click to view live lots". `src/data/auctions.js` was not deleted because `src/pages/AuctionPage.jsx` still imports it. The bid-placing UI on the page is still visually live but doesn't talk to anything; clicking "Place Bid" only updates local state. Options (b) and (c) are clean follow-ups that touch only the React repo; option (a) would require backend work.
+

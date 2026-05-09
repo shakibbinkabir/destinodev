@@ -5,10 +5,27 @@ import PageTitle from '../components/PageTitle';
 import FilterSidebar from '../components/FilterSidebar';
 import CarCard from '../components/CarCard';
 import CTABanner from '../components/CTABanner';
-import { cars } from '../data/cars';
+import Loading from '../components/Loading';
+import ErrorState from '../components/ErrorState';
+import { useApi } from '../hooks/useApi';
+import { listCars } from '../api/cars';
 import './StockListPage.css';
 
 const ITEMS_PER_PAGE = 9;
+
+const SORT_TO_API = {
+  newest: 'latest',
+  'price-low': 'price_asc',
+  'price-high': 'price_desc',
+  'year-new': 'year_desc',
+  'mileage-low': 'mileage_asc',
+};
+
+const SOURCE_TO_API = {
+  All: 'all',
+  'API Stock': 'api',
+  'In-House': 'inhouse',
+};
 
 export default function StockListPage() {
   const [searchParams] = useSearchParams();
@@ -31,88 +48,63 @@ export default function StockListPage() {
   };
 
   const [filters, setFilters] = useState(initialFilters);
+  const [appliedFilters, setAppliedFilters] = useState(initialFilters);
 
-  const filteredCars = useMemo(() => {
-    let result = [...cars];
+  const apiParams = useMemo(() => {
+    const out = {
+      sort: SORT_TO_API[sortBy] || 'latest',
+      per_page: ITEMS_PER_PAGE,
+      page,
+    };
+    if (appliedFilters.search) out.q = appliedFilters.search;
+    if (appliedFilters.makes && appliedFilters.makes.length === 1) out.make = appliedFilters.makes[0];
+    if (appliedFilters.bodyTypes && appliedFilters.bodyTypes.length === 1) out.bodyType = appliedFilters.bodyTypes[0];
+    if (appliedFilters.transmission && appliedFilters.transmission !== 'All') out.transmission = appliedFilters.transmission;
+    if (appliedFilters.fuelTypes && appliedFilters.fuelTypes.length === 1) out.fuel = appliedFilters.fuelTypes[0];
+    if (appliedFilters.yearFrom) out.year_from = appliedFilters.yearFrom;
+    if (appliedFilters.yearTo) out.year_to = appliedFilters.yearTo;
+    if (appliedFilters.priceMin) out.price_min = appliedFilters.priceMin;
+    if (appliedFilters.priceMax) out.price_max = appliedFilters.priceMax;
+    const apiSource = SOURCE_TO_API[appliedFilters.sourceFilter] || 'all';
+    if (apiSource !== 'all') out.source = apiSource;
+    return out;
+  }, [appliedFilters, sortBy, page]);
 
-    if (filters.search) {
-      const q = filters.search.toLowerCase();
-      result = result.filter(
-        (c) =>
-          c.make.toLowerCase().includes(q) ||
-          c.model.toLowerCase().includes(q) ||
-          c.description.toLowerCase().includes(q)
-      );
+  const { data, loading, error, refetch } = useApi(
+    (signal) => listCars(apiParams, { signal }),
+    [JSON.stringify(apiParams)],
+  );
+
+  // Multi-select filter dimensions are not natively supported by /api/v1/cars
+  // (PRD §8.1 takes a single value per dimension). We post-filter the page
+  // client-side when the user picks 2+ makes / body types / fuel types.
+  const apiResults = data?.data || [];
+  const meta = data?.meta?.pagination || { total: 0, last_page: 1, current_page: page };
+
+  const visibleCars = useMemo(() => {
+    let out = [...apiResults];
+    if (appliedFilters.makes && appliedFilters.makes.length > 1) {
+      out = out.filter((c) => appliedFilters.makes.includes(c.make));
     }
-
-    if (filters.makes.length > 0) {
-      result = result.filter((c) => filters.makes.includes(c.make));
+    if (appliedFilters.bodyTypes && appliedFilters.bodyTypes.length > 1) {
+      out = out.filter((c) => appliedFilters.bodyTypes.includes(c.bodyType));
     }
-
-    if (filters.yearFrom) {
-      result = result.filter((c) => c.year >= parseInt(filters.yearFrom));
+    if (appliedFilters.fuelTypes && appliedFilters.fuelTypes.length > 1) {
+      out = out.filter((c) => appliedFilters.fuelTypes.includes(c.fuel));
     }
+    return out;
+  }, [apiResults, appliedFilters]);
 
-    if (filters.yearTo) {
-      result = result.filter((c) => c.year <= parseInt(filters.yearTo));
-    }
-
-    if (filters.priceMin) {
-      result = result.filter((c) => c.price >= parseInt(filters.priceMin));
-    }
-
-    if (filters.priceMax) {
-      result = result.filter((c) => c.price <= parseInt(filters.priceMax));
-    }
-
-    if (filters.bodyTypes.length > 0) {
-      result = result.filter((c) => filters.bodyTypes.includes(c.bodyType));
-    }
-
-    if (filters.transmission && filters.transmission !== 'All') {
-      result = result.filter((c) => c.transmission === filters.transmission);
-    }
-
-    if (filters.fuelTypes.length > 0) {
-      result = result.filter((c) => filters.fuelTypes.includes(c.fuel));
-    }
-
-    if (filters.sourceFilter === 'API Stock') {
-      result = result.filter((c) => c.source === 'api');
-    } else if (filters.sourceFilter === 'In-House') {
-      result = result.filter((c) => c.source === 'inhouse');
-    }
-
-    switch (sortBy) {
-      case 'price-low':
-        result.sort((a, b) => a.price - b.price);
-        break;
-      case 'price-high':
-        result.sort((a, b) => b.price - a.price);
-        break;
-      case 'year-new':
-        result.sort((a, b) => b.year - a.year);
-        break;
-      case 'mileage-low':
-        result.sort((a, b) => a.mileage - b.mileage);
-        break;
-      default:
-        break;
-    }
-
-    return result;
-  }, [filters, sortBy]);
-
-  const totalPages = Math.ceil(filteredCars.length / ITEMS_PER_PAGE);
-  const paginatedCars = filteredCars.slice((page - 1) * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE);
+  const totalPages = meta.last_page || 1;
 
   const handleApply = () => {
     setPage(1);
+    setAppliedFilters(filters);
     setSidebarOpen(false);
   };
 
   const handleClear = () => {
-    setFilters({
+    const cleared = {
       search: '',
       makes: [],
       yearFrom: '',
@@ -123,7 +115,9 @@ export default function StockListPage() {
       transmission: 'All',
       fuelTypes: [],
       sourceFilter: 'All',
-    });
+    };
+    setFilters(cleared);
+    setAppliedFilters(cleared);
     setPage(1);
   };
 
@@ -155,13 +149,13 @@ export default function StockListPage() {
                 Filters
               </button>
               <span className="stock-page__count">
-                Showing {paginatedCars.length} of {filteredCars.length} vehicles
+                Showing {visibleCars.length} of {meta.total} vehicles
               </span>
             </div>
             <div className="stock-page__toolbar-right">
               <select
                 value={sortBy}
-                onChange={(e) => setSortBy(e.target.value)}
+                onChange={(e) => { setSortBy(e.target.value); setPage(1); }}
                 className="stock-page__sort"
               >
                 <option value="newest">Newest First</option>
@@ -189,45 +183,53 @@ export default function StockListPage() {
             </div>
           </div>
 
-          <div className={`stock-page__grid stock-page__grid--${viewMode}`}>
-            {paginatedCars.map((car) => (
-              <CarCard key={car.id} car={car} />
-            ))}
-          </div>
+          {loading ? (
+            <Loading label="Loading vehicles…" />
+          ) : error ? (
+            <ErrorState onRetry={refetch} />
+          ) : (
+            <>
+              <div className={`stock-page__grid stock-page__grid--${viewMode}`}>
+                {visibleCars.map((car) => (
+                  <CarCard key={car.id} car={car} />
+                ))}
+              </div>
 
-          {paginatedCars.length === 0 && (
-            <div className="stock-page__empty">
-              <p>No vehicles match your current filters.</p>
-              <button className="btn btn--outline" onClick={handleClear}>Clear Filters</button>
-            </div>
-          )}
+              {visibleCars.length === 0 && (
+                <div className="stock-page__empty">
+                  <p>No vehicles match your current filters.</p>
+                  <button className="btn btn--outline" onClick={handleClear}>Clear Filters</button>
+                </div>
+              )}
 
-          {totalPages > 1 && (
-            <div className="stock-page__pagination">
-              <button
-                className="stock-page__page-btn"
-                onClick={() => setPage(page - 1)}
-                disabled={page === 1}
-              >
-                <ChevronLeft size={16} />
-              </button>
-              {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-                <button
-                  key={p}
-                  className={`stock-page__page-btn${p === page ? ' stock-page__page-btn--active' : ''}`}
-                  onClick={() => setPage(p)}
-                >
-                  {p}
-                </button>
-              ))}
-              <button
-                className="stock-page__page-btn"
-                onClick={() => setPage(page + 1)}
-                disabled={page === totalPages}
-              >
-                <ChevronRight size={16} />
-              </button>
-            </div>
+              {totalPages > 1 && (
+                <div className="stock-page__pagination">
+                  <button
+                    className="stock-page__page-btn"
+                    onClick={() => setPage(page - 1)}
+                    disabled={page === 1}
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+                    <button
+                      key={p}
+                      className={`stock-page__page-btn${p === page ? ' stock-page__page-btn--active' : ''}`}
+                      onClick={() => setPage(p)}
+                    >
+                      {p}
+                    </button>
+                  ))}
+                  <button
+                    className="stock-page__page-btn"
+                    onClick={() => setPage(page + 1)}
+                    disabled={page === totalPages}
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
