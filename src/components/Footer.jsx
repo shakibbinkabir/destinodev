@@ -22,7 +22,7 @@ const groupCompanies = [
   {
     name: 'Car Washing EXP',
     description: 'MK Seiko car wash machine solutions',
-    url: 'https://destino-v.com',
+    url: 'https://destinocojp.com',
   },
   {
     name: 'Sagittario',

@@ -3,8 +3,8 @@
 Common production issues and how to fix them. Each section follows the same pattern: how to diagnose → how to fix.
 
 The two domains:
-- **Public site**: `https://destino-v.com` (React static).
-- **API + admin**: `https://api.destino-v.com` (Laravel).
+- **Public site**: `https://destinocojp.com` (React static).
+- **API + admin**: `https://api.destinocojp.com` (Laravel).
 
 ---
 
@@ -16,7 +16,7 @@ The two domains:
 
 SSH into Hostinger and look at the Laravel log:
 ```bash
-tail -n 50 ~/domains/api.destino-v.com/destino-backend/backend/storage/logs/laravel-$(date +%Y-%m-%d).log
+tail -n 50 ~/domains/api.destinocojp.com/destino-backend/backend/storage/logs/laravel-$(date +%Y-%m-%d).log
 ```
 You should see lines like `Running scheduled command: queue:work --stop-when-empty` every minute. If the log goes silent, the cron isn't firing.
 
@@ -30,13 +30,13 @@ Should show one line, ending with `php artisan schedule:run`.
 
 If the cron is missing, re-add it via hPanel → **Cron Jobs**:
 ```
-* * * * * cd /home/<user>/domains/api.destino-v.com/destino-backend/backend && php artisan schedule:run >> /dev/null 2>&1
+* * * * * cd /home/<user>/domains/api.destinocojp.com/destino-backend/backend && php artisan schedule:run >> /dev/null 2>&1
 ```
 Wait one minute, then re-check the log. You should see scheduler activity within 60 seconds.
 
 If the cron _is_ configured but not firing, the most likely cause is the path. Test the command manually:
 ```bash
-cd /home/<user>/domains/api.destino-v.com/destino-backend/backend && php artisan schedule:run
+cd /home/<user>/domains/api.destinocojp.com/destino-backend/backend && php artisan schedule:run
 ```
 If that errors (path not found, php not found), fix the path/binary in the cron. Hostinger's PHP CLI is sometimes at `/usr/bin/php` or `/opt/alt/php82/usr/bin/php` — the cron will tell you which it expects when it fails.
 
@@ -52,7 +52,7 @@ This means: the API persisted the row and queued the mail, but the queue couldn'
 
 Check the queue table for stuck jobs:
 ```bash
-cd ~/domains/api.destino-v.com/destino-backend/backend
+cd ~/domains/api.destinocojp.com/destino-backend/backend
 php artisan tinker
 > DB::table('jobs')->count();
 > DB::table('failed_jobs')->orderByDesc('failed_at')->limit(5)->get();
@@ -95,7 +95,7 @@ If the issue is the queue worker not running at all (jobs stuck, but no failed_j
 
 Look at the log around when the sync was scheduled to run:
 ```bash
-grep -i "stock:sync\|OnePriceStock" ~/domains/api.destino-v.com/destino-backend/backend/storage/logs/laravel-$(date +%Y-%m-%d).log | tail -30
+grep -i "stock:sync\|OnePriceStock" ~/domains/api.destinocojp.com/destino-backend/backend/storage/logs/laravel-$(date +%Y-%m-%d).log | tail -30
 ```
 
 You'll see one of:
@@ -125,7 +125,7 @@ The most common cause is a missing `storage:link` symlink. Public uploads live a
 ### Diagnose
 
 ```bash
-ls -la ~/domains/api.destino-v.com/destino-backend/backend/public/storage
+ls -la ~/domains/api.destinocojp.com/destino-backend/backend/public/storage
 ```
 - If it shows a `->` arrow pointing to `../storage/app/public`, the symlink is fine. The image issue is elsewhere — check the URL the browser is requesting and confirm the file exists at `storage/app/public/<that path>`.
 - If `storage` doesn't exist or is a real directory (no arrow), the symlink is missing.
@@ -134,7 +134,7 @@ ls -la ~/domains/api.destino-v.com/destino-backend/backend/public/storage
 
 Recreate the symlink:
 ```bash
-cd ~/domains/api.destino-v.com/destino-backend/backend
+cd ~/domains/api.destinocojp.com/destino-backend/backend
 php artisan storage:link
 ```
 Refresh the page. The image should now load.
@@ -156,12 +156,12 @@ npm run build
 
 Common causes:
 - **`Failed to resolve import './data/cars'` (or similar)** — leftover import after the data files were deleted in Stage 5. Search the codebase: `grep -rn "data/cars\|data/company\|data/testimonials\|data/makes" src/`. If any match, fix or remove those imports.
-- **`VITE_API_BASE_URL is not defined`** — the `.env.production` file is missing or wasn't read. Confirm it exists at the repo root and contains `VITE_API_BASE_URL=https://api.destino-v.com/api/v1`. Vite reads `.env.production` automatically when `npm run build` runs.
+- **`VITE_API_BASE_URL is not defined`** — the `.env.production` file is missing or wasn't read. Confirm it exists at the repo root and contains `VITE_API_BASE_URL=https://api.destinocojp.com/api/v1`. Vite reads `.env.production` automatically when `npm run build` runs.
 - **TypeError or runtime error in the deployed app** — open browser devtools → Console. The error tells you which file. If it mentions an env var, the build was made without it; rebuild after fixing `.env.production`, then re-upload `dist/`.
 
 ### Fix
 
-Once the build succeeds, upload `dist/*` to `~/domains/destino-v.com/public_html/`, replacing the old build. Make sure `.htaccess` (the SPA fallback rule) is preserved.
+Once the build succeeds, upload `dist/*` to `~/domains/destinocojp.com/public_html/`, replacing the old build. Make sure `.htaccess` (the SPA fallback rule) is preserved.
 
 If the deployed site is blank but the build worked locally, your `.env.production` probably has the wrong API URL — the React app loaded but every fetch is 404'ing. Check the network tab in the browser; if you see requests going to `localhost:8000` from the production site, you uploaded a dev build. Rebuild with the production env file.
 
@@ -176,8 +176,8 @@ These endpoints are designed to fail gracefully — they cache successful respon
 ### Diagnose
 
 ```bash
-curl -i https://api.destino-v.com/api/v1/exchange-rate
-curl -i https://api.destino-v.com/api/v1/youtube-feed
+curl -i https://api.destinocojp.com/api/v1/exchange-rate
+curl -i https://api.destinocojp.com/api/v1/youtube-feed
 ```
 
 - 200 with `data.rate` → endpoint is working. Issue is on the React side (clear browser cache, hard refresh).
@@ -185,7 +185,7 @@ curl -i https://api.destino-v.com/api/v1/youtube-feed
 - 503 → upstream is down AND cache is empty. Check the next item:
 
 ```bash
-grep -i "exchange.rate\|youtube" ~/domains/api.destino-v.com/destino-backend/backend/storage/logs/laravel-$(date +%Y-%m-%d).log | tail -20
+grep -i "exchange.rate\|youtube" ~/domains/api.destinocojp.com/destino-backend/backend/storage/logs/laravel-$(date +%Y-%m-%d).log | tail -20
 ```
 
 For exchange rate: if the API key is wrong (`401`), update `EXCHANGE_RATE_API_KEY` in `.env` and clear cache.
@@ -212,7 +212,7 @@ Hit the endpoint once with curl to repopulate the cache.
 
 Confirm the user exists:
 ```bash
-cd ~/domains/api.destino-v.com/destino-backend/backend
+cd ~/domains/api.destinocojp.com/destino-backend/backend
 php artisan tinker
 > \App\Models\User::where('email','admin@destino.jp')->exists();
 > exit
@@ -244,9 +244,9 @@ php artisan tinker
 
 Confirm the `FRONTEND_URL` env var matches the actual domain the user is browsing from:
 ```bash
-grep FRONTEND_URL ~/domains/api.destino-v.com/destino-backend/backend/.env
+grep FRONTEND_URL ~/domains/api.destinocojp.com/destino-backend/backend/.env
 ```
-If it says `https://destinocojp.com` but you've migrated to `https://destino-v.com`, that's your bug.
+If it says `https://destinocojp.com` but you've migrated to `https://destinocojp.com`, that's your bug.
 
 ### Fix
 
@@ -280,8 +280,8 @@ If renewal fails repeatedly, contact Hostinger support — the issue is on their
 | Pending queue jobs | `jobs` MySQL table |
 | Uploaded images | `backend/storage/app/public/...` (served via `/storage/...`) |
 | Caches | `backend/bootstrap/cache/` and `backend/storage/framework/cache/` |
-| Filament panel | `https://api.destino-v.com/admin` |
-| Health endpoint | `https://api.destino-v.com/api/v1/health` |
+| Filament panel | `https://api.destinocojp.com/admin` |
+| Health endpoint | `https://api.destinocojp.com/api/v1/health` |
 | Sync command | `php artisan stock:sync` (cwd: `backend/`) |
 | Open blockers | `backend/BLOCKERS.md` |
 

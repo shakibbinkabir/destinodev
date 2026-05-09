@@ -24,7 +24,7 @@ class PartnersSeeder extends Seeder
             ['name' => 'JUMVEA', 'url' => null],
             ['name' => 'USS Auto Auction', 'url' => null],
             ['name' => 'AUCNET', 'url' => null],
-            ['name' => 'MK Seiko', 'url' => 'https://destino-v.com'],
+            ['name' => 'MK Seiko', 'url' => 'https://destinocojp.com'],
         ];
 
         foreach ($partners as $i => $partner) {

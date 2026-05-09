@@ -11,7 +11,7 @@ A detailed write-up of what this codebase is, how it's structured, what's alread
 - **Tagline:** *"For Those Who Love Import Cars."*
 - **Brand color:** `#32498F` (deep blue) with a `#1892c2` cyan accent for CTAs.
 - **Markets served:** 50+ countries (Africa, Middle East, Oceania, Caribbean, SE Asia, UK/Ireland).
-- **Domain referenced in code:** `destino-v.com` / `destino.jp`.
+- **Domain referenced in code:** `destinocojp.com` / `destino.jp`.
 - **Backoffice (external):** `app.destinoexport.com/login.php` (login link only — not part of this repo).
 - **Auction integration (external):** `autobidjp.com/login` (linked from header — not embedded).
 

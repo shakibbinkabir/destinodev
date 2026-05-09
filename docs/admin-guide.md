@@ -3,12 +3,12 @@
 This guide is for the person editing the Destino website day-to-day. You don't need to be technical — every routine task lives in the **Filament admin panel** at:
 
 ```
-https://api.destino-v.com/admin
+https://api.destinocojp.com/admin
 ```
 
 Log in with the credentials your developer set up. If you forget your password, use the "Forgot password?" link or ask the developer to reset it.
 
-The site itself (https://destino-v.com) is a published view of what's in the admin. Most changes appear within a few seconds; some (settings, page content) may take up to 5 minutes due to caching.
+The site itself (https://destinocojp.com) is a published view of what's in the admin. Most changes appear within a few seconds; some (settings, page content) may take up to 5 minutes due to caching.
 
 ---
 

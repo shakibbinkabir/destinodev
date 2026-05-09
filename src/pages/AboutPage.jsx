@@ -138,7 +138,7 @@ export default function AboutPage() {
               <tr><td>Fax</td><td>{fax}</td></tr>
               <tr><td>Email</td><td>{email}</td></tr>
               <tr><td>Memberships</td><td>{memberships}</td></tr>
-              <tr><td>Group Company</td><td><a href="https://destino-v.com" target="_blank" rel="noopener noreferrer">Destino Pte Ltd</a> — Car Wash Solutions (Singapore)</td></tr>
+              <tr><td>Group Company</td><td><a href="https://destinocojp.com" target="_blank" rel="noopener noreferrer">Destino Pte Ltd</a> — Car Wash Solutions (Singapore)</td></tr>
             </tbody>
           </table>
         </div>
