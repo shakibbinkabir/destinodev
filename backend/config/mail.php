@@ -115,4 +115,18 @@ return [
         'name' => env('MAIL_FROM_NAME', env('APP_NAME', 'Laravel')),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Inquiry Recipient
+    |--------------------------------------------------------------------------
+    |
+    | Default destination for the admin-side inquiry and review notifications
+    | when no `company.email` setting is configured. Mailables in App\Mail
+    | resolve recipient in this order: settings.company.email, then this
+    | env value, then a hardcoded "export@destino.jp" fallback.
+    |
+    */
+
+    'inquiry_to' => env('MAIL_INQUIRY_TO', 'export@destino.jp'),
+
 ];

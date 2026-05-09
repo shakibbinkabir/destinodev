@@ -7,6 +7,7 @@ use App\Models\Testimonial;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
+use Filament\Notifications\Notification;
 use Filament\Tables;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
@@ -104,15 +105,34 @@ class TestimonialResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('approve')
+                    ->label('Approve')
                     ->icon('heroicon-o-check')
                     ->color('success')
                     ->visible(fn (Testimonial $record) => $record->status !== 'approved')
-                    ->action(fn (Testimonial $record) => $record->update(['status' => 'approved'])),
+                    ->action(function (Testimonial $record): void {
+                        $record->update(['status' => 'approved']);
+                        Notification::make()
+                            ->title('Review approved')
+                            ->body("{$record->name}'s review is now visible on the public site.")
+                            ->success()
+                            ->send();
+                    }),
                 Tables\Actions\Action::make('reject')
+                    ->label('Reject')
                     ->icon('heroicon-o-x-mark')
                     ->color('danger')
+                    ->requiresConfirmation()
+                    ->modalHeading('Reject this review?')
+                    ->modalDescription('Rejected reviews stay in the database for audit but never appear on the public site. You can re-approve later.')
                     ->visible(fn (Testimonial $record) => $record->status !== 'rejected')
-                    ->action(fn (Testimonial $record) => $record->update(['status' => 'rejected'])),
+                    ->action(function (Testimonial $record): void {
+                        $record->update(['status' => 'rejected']);
+                        Notification::make()
+                            ->title('Review rejected')
+                            ->body("{$record->name}'s review will not be shown on the public site.")
+                            ->warning()
+                            ->send();
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -120,13 +140,36 @@ class TestimonialResource extends Resource
                         ->label('Approve')
                         ->icon('heroicon-o-check')
                         ->color('success')
-                        ->action(fn ($records) => $records->each->update(['status' => 'approved']))
+                        ->requiresConfirmation()
+                        ->action(function ($records): void {
+                            $count = 0;
+                            foreach ($records as $record) {
+                                $record->update(['status' => 'approved']);
+                                $count++;
+                            }
+                            Notification::make()
+                                ->title("Approved {$count} review(s)")
+                                ->success()
+                                ->send();
+                        })
                         ->deselectRecordsAfterCompletion(),
                     Tables\Actions\BulkAction::make('reject')
                         ->label('Reject')
                         ->icon('heroicon-o-x-mark')
                         ->color('danger')
-                        ->action(fn ($records) => $records->each->update(['status' => 'rejected']))
+                        ->requiresConfirmation()
+                        ->modalHeading('Reject the selected reviews?')
+                        ->action(function ($records): void {
+                            $count = 0;
+                            foreach ($records as $record) {
+                                $record->update(['status' => 'rejected']);
+                                $count++;
+                            }
+                            Notification::make()
+                                ->title("Rejected {$count} review(s)")
+                                ->warning()
+                                ->send();
+                        })
                         ->deselectRecordsAfterCompletion(),
                     Tables\Actions\BulkAction::make('mark_featured')
                         ->label('Mark featured')

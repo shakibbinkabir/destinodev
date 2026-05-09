@@ -1,14 +1,18 @@
 <?php
 
+use App\Mail\CustomerInquiryConfirmation;
+use App\Mail\NewInquiryNotification;
 use App\Models\Car;
 use App\Models\Inquiry;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
 
 uses(RefreshDatabase::class);
 
 beforeEach(function () {
     RateLimiter::clear('throttle:10,1');
+    Mail::fake();
     // Throttle keys are derived from route signature + IP; cache is fresh
     // per test under the array driver, so no further teardown is needed.
 });
@@ -74,6 +78,36 @@ it('returns 422 when car_id does not exist', function () {
 
     $response->assertStatus(422);
     $response->assertJsonValidationErrors(['car_id']);
+});
+
+it('queues the admin notification and the customer confirmation on success', function () {
+    $car = Car::factory()->create();
+
+    $payload = [
+        'name' => 'Jane Doe',
+        'email' => 'jane@example.com',
+        'message' => 'Interested in this Land Cruiser.',
+        'car_id' => $car->id,
+        'source' => 'single_car',
+    ];
+
+    $this->postJson('/api/v1/inquiries', $payload)->assertStatus(201);
+
+    $inquiry = Inquiry::firstOrFail();
+
+    Mail::assertQueued(NewInquiryNotification::class, function ($mail) use ($inquiry) {
+        return $mail->inquiry->is($inquiry);
+    });
+    Mail::assertQueued(CustomerInquiryConfirmation::class, function ($mail) use ($inquiry) {
+        return $mail->hasTo('jane@example.com')
+            && $mail->inquiry->is($inquiry);
+    });
+});
+
+it('does not queue mail when validation fails', function () {
+    $this->postJson('/api/v1/inquiries', ['source' => 'single_car'])->assertStatus(422);
+
+    Mail::assertNothingQueued();
 });
 
 it('returns 429 after the 11th request from the same IP within a minute', function () {

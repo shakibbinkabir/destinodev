@@ -3,14 +3,17 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Requests\Api\V1\StoreReviewRequest;
+use App\Mail\PendingReviewNotification;
 use App\Models\Testimonial;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Mail;
 
 class ReviewsController extends ApiController
 {
     /**
-     * Persist a public review as a pending Testimonial (PRD §8.5). Admin
-     * notification email and approval moderation are wired in Stage 4.
+     * Persist a public review as a pending Testimonial (PRD §8.5) and queue
+     * the moderation notification to the configured admin recipient
+     * (PRD §6.4.2). Approve/Reject from Filament unhides it.
      */
     public function store(StoreReviewRequest $request): JsonResponse
     {
@@ -21,6 +24,8 @@ class ReviewsController extends ApiController
                 'featured' => false,
             ],
         ));
+
+        Mail::queue(new PendingReviewNotification($testimonial));
 
         return $this->itemResponse([
             'id' => $testimonial->id,

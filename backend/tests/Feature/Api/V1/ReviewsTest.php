@@ -1,9 +1,15 @@
 <?php
 
+use App\Mail\PendingReviewNotification;
 use App\Models\Testimonial;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\Mail;
 
 uses(RefreshDatabase::class);
+
+beforeEach(function () {
+    Mail::fake();
+});
 
 it('creates a pending testimonial when a valid review is posted', function () {
     $payload = [
@@ -44,4 +50,26 @@ it('returns 422 when required fields are missing', function () {
 
     $response->assertStatus(422);
     $response->assertJsonValidationErrors(['name', 'rating', 'text']);
+});
+
+it('queues a pending review notification on success', function () {
+    $payload = [
+        'name' => 'John Smith',
+        'rating' => 5,
+        'text' => 'Excellent service from Destino.',
+    ];
+
+    $this->postJson('/api/v1/reviews', $payload)->assertStatus(201);
+
+    $testimonial = Testimonial::firstOrFail();
+
+    Mail::assertQueued(PendingReviewNotification::class, function ($mail) use ($testimonial) {
+        return $mail->testimonial->is($testimonial);
+    });
+});
+
+it('does not queue mail when review validation fails', function () {
+    $this->postJson('/api/v1/reviews', [])->assertStatus(422);
+
+    Mail::assertNothingQueued();
 });
