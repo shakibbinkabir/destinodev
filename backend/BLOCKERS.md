@@ -37,3 +37,37 @@ Format per entry:
 **Owner:** Client
 **What we need:** Final Facebook, Instagram, YouTube, LinkedIn, X URLs. The seeded `social.*` settings store empty strings (the React source had `"#"` placeholders).
 **Impact if not resolved:** The header/footer social icons link to nothing useful. The frontend should hide icons whose URL is empty; if it does not, the change is small.
+
+## 2026-05-09 — One-Price Stock API documentation pending
+**Stage:** 4
+**Owner:** Client / vendor (One-Price Stock)
+**What we need:** Endpoint URL, auth scheme, request/response shapes, pagination behaviour, rate limits, and (if any) sandbox credentials for the One-Price Stock listings API. Per PRD §15 this was supposed to land before Stage 4 began.
+**Impact if not resolved:** `App\Services\OnePriceStockService` is implemented against a documented STUB shape (see the class docblock); `php artisan stock:sync` short-circuits to a logged warning + exit 0 while `ONE_PRICE_STOCK_API_URL` / `ONE_PRICE_STOCK_API_KEY` remain `CHANGE_ME_*` placeholders, so the scheduler does not spam errors. When the real shape arrives, update `OnePriceStockService::normalize()` AND this entry in lockstep — do not edit the schema to fit the API.
+
+Assumed item shape (mirrors PRD §7.1 column names):
+
+```
+{
+  "id":              string  // → cars.external_id
+  "make":            string,
+  "model":           string,
+  "year":            int,
+  "price_jpy":       number,
+  "mileage_km":      int,
+  "fuel":            "gasoline" | "hybrid" | "ev" | "diesel",
+  "transmission":    "automatic" | "manual" | "cvt",
+  "body_type":       string,
+  "color":           string,
+  "drive_type":      "2wd" | "4wd" | "awd" | "fwd" | "rwd",
+  "engine_size":     string?,
+  "seats":           int,
+  "doors":           int,
+  "condition":       string,
+  "battery_capacity": string?,
+  "motor_output":    string?,
+  "description":     string,
+  "image_urls":      string[]
+}
+```
+
+Assumed transport: bearer-token auth in the `Authorization` header (`Http::withToken(...)`), and either a flat list or one wrapped under `data` / `items` / `results`.
