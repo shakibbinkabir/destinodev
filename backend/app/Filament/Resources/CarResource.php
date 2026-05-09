@@ -192,7 +192,16 @@ class CarResource extends Resource
                         ->reorderable()
                         ->reorderableWithButtons()
                         ->collapsible()
-                        ->itemLabel(fn (array $state): ?string => $state['path'] ?? null)
+                        ->itemLabel(function (array $state): ?string {
+                            // FileUpload stores the path as a string when loaded
+                            // from the DB but as a keyed array (['temp-id' => path])
+                            // immediately after an upload. Handle both.
+                            $path = $state['path'] ?? null;
+                            if (is_array($path)) {
+                                $path = reset($path) ?: null;
+                            }
+                            return is_string($path) ? $path : null;
+                        })
                         ->defaultItems(0)
                         ->addActionLabel('Add image'),
                 ]),
