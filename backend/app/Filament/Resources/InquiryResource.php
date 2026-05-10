@@ -19,7 +19,7 @@ class InquiryResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-envelope';
 
-    protected static ?string $navigationGroup = 'CRM';
+    protected static ?string $navigationGroup = 'Inquiries & Reviews';
 
     protected static ?int $navigationSort = 10;
 

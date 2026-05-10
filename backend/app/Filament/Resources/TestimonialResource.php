@@ -19,7 +19,7 @@ class TestimonialResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-star';
 
-    protected static ?string $navigationGroup = 'CRM';
+    protected static ?string $navigationGroup = 'Inquiries & Reviews';
 
     protected static ?int $navigationSort = 20;
 

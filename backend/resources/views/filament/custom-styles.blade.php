@@ -5,26 +5,42 @@
     minimal and Filament-stable to avoid breakage on package updates.
 --}}
 <style>
-    /* Subtle brand-tinted gradient on the login / simple layout */
+    /* ---------- Login / simple layout ---------- */
+    /* Light mode: brand-tinted gradient corners on a soft gray base. */
     .fi-simple-layout {
         background:
-            radial-gradient(circle at 0% 0%, rgb(50 73 143 / 0.07) 0%, transparent 45%),
-            radial-gradient(circle at 100% 100%, rgb(50 73 143 / 0.05) 0%, transparent 50%),
-            #f9fafb;
+            radial-gradient(ellipse at top left, rgb(50 73 143 / 0.18) 0%, transparent 55%),
+            radial-gradient(ellipse at bottom right, rgb(50 73 143 / 0.12) 0%, transparent 55%),
+            #f8fafc !important;
+        min-height: 100vh;
     }
+    /* Dark mode: brand-tinted gradient corners on slate-900. The previous
+       version used 0.18 alpha and barely registered visually — bumping to
+       0.45/0.30 makes the brand presence obvious without overpowering. */
     .dark .fi-simple-layout {
         background:
-            radial-gradient(circle at 0% 0%, rgb(50 73 143 / 0.18) 0%, transparent 45%),
-            radial-gradient(circle at 100% 100%, rgb(50 73 143 / 0.12) 0%, transparent 50%),
-            rgb(15 23 42);
+            radial-gradient(ellipse 60% 50% at top left, rgb(50 73 143 / 0.45) 0%, transparent 60%),
+            radial-gradient(ellipse 60% 50% at bottom right, rgb(50 73 143 / 0.30) 0%, transparent 60%),
+            rgb(15 23 42) !important;
+        min-height: 100vh;
+    }
+    /* The login card itself: subtle backdrop blur and a hairline border so
+       it floats over the gradient instead of looking glued to it. */
+    .fi-simple-main {
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        background-color: rgb(255 255 255 / 0.85) !important;
+        border: 1px solid rgb(0 0 0 / 0.05);
+    }
+    .dark .fi-simple-main {
+        background-color: rgb(30 41 59 / 0.85) !important;
+        border-color: rgb(255 255 255 / 0.06);
     }
 
-    /* Slightly tighter, more deliberate sidebar item radius */
+    /* ---------- Sidebar polish ---------- */
     .fi-sidebar-nav-item-button {
         border-radius: 0.625rem;
     }
-
-    /* Sharper section labels in the sidebar */
     .fi-sidebar-group-label {
         font-weight: 600;
         letter-spacing: 0.06em;
@@ -33,7 +49,7 @@
         opacity: 0.75;
     }
 
-    /* Topbar gets a hairline shadow instead of a hard border for depth */
+    /* ---------- Topbar depth ---------- */
     .fi-topbar {
         box-shadow: 0 1px 0 0 rgb(0 0 0 / 0.04);
     }
@@ -41,7 +57,7 @@
         box-shadow: 0 1px 0 0 rgb(255 255 255 / 0.06);
     }
 
-    /* Card-like widgets get slightly softer corners */
+    /* ---------- Card / widget radii ---------- */
     .fi-section,
     .fi-wi-stats-overview-stat {
         border-radius: 0.75rem;

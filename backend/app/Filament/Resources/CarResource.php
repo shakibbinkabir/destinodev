@@ -20,7 +20,7 @@ class CarResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static ?string $navigationGroup = 'Catalog';
+    protected static ?string $navigationGroup = 'Vehicles';
 
     protected static ?int $navigationSort = 10;
 

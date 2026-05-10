@@ -18,7 +18,7 @@ class PageContentResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-document-text';
 
-    protected static ?string $navigationGroup = 'Content';
+    protected static ?string $navigationGroup = 'Website';
 
     protected static ?int $navigationSort = 10;
 

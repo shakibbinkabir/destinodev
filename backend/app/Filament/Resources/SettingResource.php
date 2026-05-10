@@ -28,11 +28,29 @@ class SettingResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-cog-6-tooth';
 
-    protected static ?string $navigationGroup = 'System';
+    protected static ?string $navigationGroup = 'Settings & Users';
 
     protected static ?int $navigationSort = 100;
 
     protected static ?string $recordTitleAttribute = 'key';
+
+    /**
+     * Custom slug so /admin/settings can belong to the friendly Settings
+     * page (App\Filament\Pages\Settings). This raw key/value resource still
+     * exists at /admin/settings-raw for technical users who need to add a
+     * brand-new setting key not covered by the friendly form.
+     */
+    protected static ?string $slug = 'settings-raw';
+
+    /**
+     * Hidden from navigation — the operator-facing flow is the custom
+     * Settings page. Resource stays registered so technical users can
+     * hit /admin/settings-raw for advanced row-level access.
+     */
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
 
     public static function form(Form $form): Form
     {

@@ -17,7 +17,7 @@ class DeliveredCarResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-truck';
 
-    protected static ?string $navigationGroup = 'Catalog';
+    protected static ?string $navigationGroup = 'Vehicles';
 
     protected static ?int $navigationSort = 20;
 

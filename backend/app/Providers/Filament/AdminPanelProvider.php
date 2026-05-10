@@ -52,10 +52,10 @@ class AdminPanelProvider extends PanelProvider
             ->sidebarCollapsibleOnDesktop()
             ->maxContentWidth(MaxWidth::Full)
             ->navigationGroups([
-                NavigationGroup::make('Catalog')->icon('heroicon-o-rectangle-stack'),
-                NavigationGroup::make('CRM')->icon('heroicon-o-inbox'),
-                NavigationGroup::make('Content')->icon('heroicon-o-document-text'),
-                NavigationGroup::make('System')->icon('heroicon-o-cog-6-tooth')->collapsed(),
+                NavigationGroup::make('Vehicles')->icon('heroicon-o-rectangle-stack'),
+                NavigationGroup::make('Inquiries & Reviews')->icon('heroicon-o-inbox'),
+                NavigationGroup::make('Website')->icon('heroicon-o-document-text'),
+                NavigationGroup::make('Settings & Users')->icon('heroicon-o-cog-6-tooth')->collapsed(),
             ])
 
             // ----- Discovery -----
