@@ -16,6 +16,15 @@ return [
     'name' => env('APP_NAME', 'Laravel'),
 
     /*
+    | Public site URL for the React app on the apex domain. Registered here
+    | so it's available via `config('app.frontend_url')` even after
+    | `php artisan config:cache` (which empties env() outside config files).
+    | Used by the Filament admin's "View Site" topbar action and anywhere
+    | else we link back to the public site.
+    */
+    'frontend_url' => env('FRONTEND_URL', 'https://destinocojp.com'),
+
+    /*
     |--------------------------------------------------------------------------
     | Application Environment
     |--------------------------------------------------------------------------
