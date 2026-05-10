@@ -17,11 +17,34 @@ concurrency:
 
 jobs:
   deploy:
-    name: Trigger Webhook Deploy
+    name: Build Frontend & Trigger Webhook
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Hit Deployment Webhook
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build Frontend
+        run: |
+          npm ci
+          npm run build
+
+      - name: Upload frontend via FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.FTP_USER }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./dist/
+          server-dir: ./public_html/
+          timeout: 600000
+
+      - name: Hit Deployment Webhook (Backend via Pull)
         run: |
           HEALTH=$(curl -fsS --max-time 300 "https://api.destinocojp.com/deploy.php?token=${{ secrets.DEPLOY_TOKEN }}" || true)
           echo "$HEALTH"

@@ -57,17 +57,7 @@ $commands = [
     "cd $appDir/backend && php artisan route:clear 2>&1",
     "cd $appDir/backend && php artisan route:cache 2>&1",
     "cd $appDir/backend && php artisan view:clear 2>&1",
-    "cd $appDir/backend && php artisan view:cache 2>&1",
-
-    "echo '==> Installing frontend dependencies (if npm is available)'",
-    // We explicitly source NVM so it loads Node/NPM into the local command scope
-    "cd $appDir && bash -c 'export NVM_DIR=\"$homeDir/.nvm\"; [ -s \"\$NVM_DIR/nvm.sh\" ] && \. \"\$NVM_DIR/nvm.sh\"; if command -v npm >/dev/null 2>&1; then npm ci --no-audit --no-fund; else echo \"NPM not found\"; fi' 2>&1",
-    
-    "echo '==> Building frontend'",
-    "cd $appDir && bash -c 'export NVM_DIR=\"$homeDir/.nvm\"; [ -s \"\$NVM_DIR/nvm.sh\" ] && \. \"\$NVM_DIR/nvm.sh\"; if command -v npm >/dev/null 2>&1; then npm run build; fi' 2>&1",
-
-    "echo '==> Publishing frontend artifacts'",
-    "cd $appDir && if [ -d \"dist\" ]; then cp -rf dist/. $apexDocroot/; else echo 'No dist folder found'; fi 2>&1"
+    "cd $appDir/backend && php artisan view:cache 2>&1"
 ];
 
 foreach ($commands as $command) {
