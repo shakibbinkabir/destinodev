@@ -44,20 +44,27 @@ jobs:
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
 
-          # Use a separate worktree for the orphan branch so node_modules/
-          # from the build step never gets staged. The previous "git rm -rf ."
-          # + "git add -A" pattern wiped .gitignore and then picked up
-          # node_modules — committing 4700+ files per deploy.
-          git fetch origin ui-build || true
-          git worktree add --orphan -B ui-build ../ui-build-tree
+          # Stash the compiled assets outside the repo so we can safely wipe
+          # the working tree without losing them.
+          DIST_TMP=$(mktemp -d)
+          cp -r dist/. "$DIST_TMP/"
 
-          # Wipe whatever was on the branch before
-          rm -rf ../ui-build-tree/* ../ui-build-tree/.[!.]* 2>/dev/null || true
+          # Switch to a fresh orphan branch in-place. (We tried
+          # `git worktree add --orphan -B` first, but git 2.53 on the runner
+          # fails mid-setup with "fatal: not a git repository" — the worktree
+          # directory gets registered but the .git link file doesn't get
+          # written before subsequent commands try to use it.)
+          git checkout --orphan ui-build
+          git rm -rf --cached . 2>/dev/null || true
 
-          # Copy ONLY the compiled build output
-          cp -r dist/. ../ui-build-tree/
+          # Wipe every file in the working tree except .git so node_modules,
+          # source code, and config files don't end up on the ui-build branch.
+          # Without this, "git add -A" would stage 4700+ files per deploy.
+          find . -mindepth 1 -maxdepth 1 ! -name '.git' -exec rm -rf {} +
 
-          cd ../ui-build-tree
+          # Restore just the compiled assets
+          cp -r "$DIST_TMP/." .
+
           git add -A
           git commit --allow-empty -m "Deploy UI build $(date -u +%Y-%m-%dT%H:%M:%SZ)"
           git push -f origin ui-build
