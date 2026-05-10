@@ -33,7 +33,7 @@ echo "Starting deployment...\n";
 // Hostinger shared hosting environment typical paths
 $appDir = realpath(__DIR__ . '/../../'); 
 $apexDocroot = realpath($appDir . '/../');
-$homeDir = realpath($apexDocroot . '/../../'); // usually /home/uXXXXXXX
+$homeDir = realpath($apexDocroot . '/../../../'); // usually /home/uXXXXXXX
 
 // Help shell_exec find PHP, Composer, and Node/NPM
 putenv("HOME=$homeDir");
