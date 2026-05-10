@@ -13,9 +13,12 @@ backend/node_modules/
 backend/.env
 backend/storage/*.log
 backend/storage/logs/*.log
-backend/storage/framework/cache/data/
-backend/storage/framework/sessions/
-backend/storage/framework/views/
+backend/storage/framework/cache/data/*
+!backend/storage/framework/cache/data/.gitignore
+backend/storage/framework/sessions/*
+!backend/storage/framework/sessions/.gitignore
+backend/storage/framework/views/*
+!backend/storage/framework/views/.gitignore
 backend/database/*.sqlite
 backend/database/*.sqlite-journal
 backend/bootstrap/cache/*.php
