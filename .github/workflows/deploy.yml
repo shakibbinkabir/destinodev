@@ -1,0 +1,88 @@
+name: Deploy to Hostinger
+
+# Triggers:
+#   push to main → automatic deploy of whatever was just merged
+#   workflow_dispatch → manual deploy from the Actions tab (handy for re-runs)
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Don't let two deploys race each other. If a second push lands while one is
+# running, the second waits — we don't cancel mid-deploy because Laravel
+# config:cache + composer install aren't safe to interrupt halfway.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Deploy backend + frontend
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOSTINGER_HOST }}
+          username: ${{ secrets.HOSTINGER_USER }}
+          key: ${{ secrets.HOSTINGER_SSH_KEY }}
+          port: ${{ secrets.HOSTINGER_PORT }}
+          command_timeout: 10m
+          script: |
+            set -euo pipefail
+
+            APP_DIR="$HOME/domains/destinocojp.com/public_html/api.destinocojp.com"
+            APEX_DOCROOT="$HOME/domains/destinocojp.com/public_html"
+
+            echo "==> [1/5] Pulling latest main"
+            cd "$APP_DIR"
+            git fetch --depth=1 origin main
+            git reset --hard origin/main
+            git clean -fd -- ':!backend/.env' ':!backend/storage' ':!.htaccess'
+
+            echo "==> [2/5] Backend: composer install"
+            cd "$APP_DIR/backend"
+            mkdir -p storage/framework/views \
+                     storage/framework/sessions \
+                     storage/framework/cache/data \
+                     storage/logs \
+                     bootstrap/cache
+            chmod -R 775 storage bootstrap/cache
+            composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+            echo "==> [3/5] Backend: migrate + cache"
+            php artisan migrate --force
+            php artisan config:clear
+            php artisan config:cache
+            php artisan route:clear
+            php artisan route:cache
+            php artisan view:clear
+            php artisan view:cache
+
+            echo "==> [4/5] Frontend: npm build (if Node available)"
+            cd "$APP_DIR"
+            if command -v npm >/dev/null 2>&1; then
+              npm ci --no-audit --no-fund
+              npm run build
+              # Copy build artifacts into the apex docroot, NEXT TO the
+              # api.destinocojp.com/ subdomain folder. dot-suffix copies
+              # hidden files like .htaccess too.
+              cp -rf dist/. "$APEX_DOCROOT/"
+            else
+              echo "WARNING: npm not available on server. Skipping frontend rebuild."
+              echo "Either install Node via hPanel → Advanced → Node.js, or build"
+              echo "locally and upload dist/* to ~/domains/destinocojp.com/public_html/."
+            fi
+
+            echo "==> [5/5] Health check"
+            HEALTH=$(curl -fsS --max-time 10 https://api.destinocojp.com/api/v1/health || true)
+            if [[ "$HEALTH" != *'"status":"ok"'* ]]; then
+              echo "ERROR: API health check failed. Response was:"
+              echo "$HEALTH"
+              echo "Check storage/logs/laravel-$(date +%Y-%m-%d).log on the server."
+              exit 1
+            fi
+            echo "API health: $HEALTH"
+
+            echo "==> Deploy complete."
