@@ -38,7 +38,8 @@ $homeDir = realpath($apexDocroot . '/../../'); // usually /home/uXXXXXXX
 // Help shell_exec find PHP, Composer, and Node/NPM
 putenv("HOME=$homeDir");
 putenv("COMPOSER_HOME=$homeDir/.composer");
-putenv('PATH=' . $homeDir . '/.nvm/versions/node/current/bin:/usr/local/bin:/usr/bin:/bin:' . getenv('PATH'));
+// NVM sets Node on different paths based on the hostinger server. Add common ones to PATH
+putenv('PATH=' . $homeDir . '/.nvm/versions/node/current/bin:' . $homeDir . '/.nvm/versions/node/$(nvm current)/bin:/usr/local/bin:/usr/bin:/bin:' . getenv('PATH'));
 
 $commands = [
     "echo '==> Pulling latest main'",
@@ -59,11 +60,11 @@ $commands = [
     "cd $appDir/backend && php artisan view:cache 2>&1",
 
     "echo '==> Installing frontend dependencies (if npm is available)'",
-    // Use bash -l (login shell) so that Hostinger's Node/NVM paths get loaded automatically
-    "cd $appDir && bash -l -c 'if command -v npm >/dev/null 2>&1; then npm ci --no-audit --no-fund; else echo \"NPM not found\"; fi' 2>&1",
+    // We explicitly source NVM so it loads Node/NPM into the local command scope
+    "cd $appDir && bash -c 'export NVM_DIR=\"$homeDir/.nvm\"; [ -s \"\$NVM_DIR/nvm.sh\" ] && \. \"\$NVM_DIR/nvm.sh\"; if command -v npm >/dev/null 2>&1; then npm ci --no-audit --no-fund; else echo \"NPM not found\"; fi' 2>&1",
     
     "echo '==> Building frontend'",
-    "cd $appDir && bash -l -c 'if command -v npm >/dev/null 2>&1; then npm run build; fi' 2>&1",
+    "cd $appDir && bash -c 'export NVM_DIR=\"$homeDir/.nvm\"; [ -s \"\$NVM_DIR/nvm.sh\" ] && \. \"\$NVM_DIR/nvm.sh\"; if command -v npm >/dev/null 2>&1; then npm run build; fi' 2>&1",
 
     "echo '==> Publishing frontend artifacts'",
     "cd $appDir && if [ -d \"dist\" ]; then cp -rf dist/. $apexDocroot/; else echo 'No dist folder found'; fi 2>&1"
