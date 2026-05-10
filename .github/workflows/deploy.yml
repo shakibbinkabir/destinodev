@@ -8,6 +8,11 @@ on:
     branches: [main]
   workflow_dispatch:
 
+# The bot needs to push to the ui-build branch. Default GITHUB_TOKEN is
+# read-only, which is why earlier runs failed with HTTP 403.
+permissions:
+  contents: write
+
 # Don't let two deploys race each other. If a second push lands while one is
 # running, the second waits — we don't cancel mid-deploy because Laravel
 # config:cache + composer install aren't safe to interrupt halfway.
@@ -38,14 +43,24 @@ jobs:
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          # Switch to an orphan branch so we only push the dist folder
-          git checkout --orphan ui-build
-          git rm -rf .
-          # Move dist contents to root and commit them
-          mv dist/* ./
+
+          # Use a separate worktree for the orphan branch so node_modules/
+          # from the build step never gets staged. The previous "git rm -rf ."
+          # + "git add -A" pattern wiped .gitignore and then picked up
+          # node_modules — committing 4700+ files per deploy.
+          git fetch origin ui-build || true
+          git worktree add --orphan -B ui-build ../ui-build-tree
+
+          # Wipe whatever was on the branch before
+          rm -rf ../ui-build-tree/* ../ui-build-tree/.[!.]* 2>/dev/null || true
+
+          # Copy ONLY the compiled build output
+          cp -r dist/. ../ui-build-tree/
+
+          cd ../ui-build-tree
           git add -A
-          git commit -m "Deploy UI build to ui-build branch"
-          git push origin ui-build --force
+          git commit --allow-empty -m "Deploy UI build $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          git push -f origin ui-build
 
       - name: Hit Deployment Webhook (Backend via Pull)
         run: |

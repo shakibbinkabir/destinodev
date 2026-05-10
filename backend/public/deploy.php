@@ -35,11 +35,19 @@ $appDir = realpath(__DIR__ . '/../../');
 $apexDocroot = realpath($appDir . '/../');
 $homeDir = realpath($apexDocroot . '/../../../'); // usually /home/uXXXXXXX
 
-// Help shell_exec find PHP, Composer, and Node/NPM
+// Help shell_exec find PHP, Composer, git, etc. PHP-FPM's default PATH is
+// often minimal, so we extend it with the standard system locations plus
+// a couple of nvm guesses for Node (used only if the script ever shells
+// out to npm — currently it doesn't, but harmless to include).
 putenv("HOME=$homeDir");
 putenv("COMPOSER_HOME=$homeDir/.composer");
-// NVM sets Node on different paths based on the hostinger server. Add common ones to PATH
-putenv('PATH=' . $homeDir . '/.nvm/versions/node/current/bin:' . $homeDir . '/.nvm/versions/node/$(nvm current)/bin:/usr/local/bin:/usr/bin:/bin:' . getenv('PATH'));
+putenv('PATH=' . implode(':', [
+    "$homeDir/.nvm/versions/node/default/bin",  // nvm default alias if set
+    '/usr/local/bin',
+    '/usr/bin',
+    '/bin',
+    getenv('PATH') ?: '',
+]));
 
 $commands = [
     "echo '==> Pulling latest main'",
@@ -62,11 +70,18 @@ $commands = [
     "echo '==> Deploying UI build artifacts'",
     // Fetch the ui-build branch (which contains strictly the compiled dist contents)
     "cd $appDir && git fetch --depth=1 origin ui-build 2>&1",
-    // We will extract the frontend files into the apex domain docroot (or adjust to your specific React folder path)
-    // The typical Hostinger path for the main domain when the API is on a subdomain is '../destinocojp.com/public_html'
-    // I am assuming \$apexDocroot is where the frontend lives based on the FTP destination './public_html/'
-    "echo 'Extracting frontend into ' $apexDocroot",
-    "cd $appDir && git archive origin/ui-build | tar -x -C $apexDocroot 2>&1"
+    // Clean stale build artifacts from the apex docroot before extracting the
+    // new ones. Without this, old hashed bundles (assets/index-OLDHASH.css)
+    // accumulate forever because tar doesn't delete files that aren't in the
+    // archive. We preserve api.destinocojp.com/ (the API subdomain folder)
+    // and .well-known/ (Let's Encrypt ACME challenges).
+    "echo '==> Cleaning previous build from ' " . escapeshellarg($apexDocroot),
+    "find " . escapeshellarg($apexDocroot) . " -mindepth 1 -maxdepth 1 "
+        . "! -name 'api.destinocojp.com' "
+        . "! -name '.well-known' "
+        . "-exec rm -rf {} + 2>&1",
+    "echo '==> Extracting frontend into ' " . escapeshellarg($apexDocroot),
+    "cd $appDir && git archive origin/ui-build | tar -x -C " . escapeshellarg($apexDocroot) . " 2>&1",
 ];
 
 foreach ($commands as $command) {
