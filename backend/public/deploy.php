@@ -68,8 +68,12 @@ $commands = [
     "cd $appDir/backend && php artisan view:cache 2>&1",
 
     "echo '==> Deploying UI build artifacts'",
-    // Fetch the ui-build branch (which contains strictly the compiled dist contents)
-    "cd $appDir && git fetch --depth=1 origin ui-build 2>&1",
+    // Fetch the ui-build branch. Force-update the remote tracking ref because
+    // ui-build is force-pushed on every CI run, and Hostinger's initial clone
+    // may have set the origin refspec to track only main — so a plain
+    // `git fetch origin ui-build` updates FETCH_HEAD but not origin/ui-build.
+    "cd $appDir && git fetch --depth=1 --force origin "
+        . "+refs/heads/ui-build:refs/remotes/origin/ui-build 2>&1",
     // Clean stale build artifacts from the apex docroot before extracting the
     // new ones. Without this, old hashed bundles (assets/index-OLDHASH.css)
     // accumulate forever because tar doesn't delete files that aren't in the
@@ -80,8 +84,11 @@ $commands = [
         . "! -name 'api.destinocojp.com' "
         . "! -name '.well-known' "
         . "-exec rm -rf {} + 2>&1",
+    // Use FETCH_HEAD as a fallback ref — always set by the fetch above, so
+    // even if the remote tracking ref update somehow doesn't take, the
+    // archive still has something concrete to point at.
     "echo '==> Extracting frontend into ' " . escapeshellarg($apexDocroot),
-    "cd $appDir && git archive origin/ui-build | tar -x -C " . escapeshellarg($apexDocroot) . " 2>&1",
+    "cd $appDir && git archive FETCH_HEAD | tar -x -C " . escapeshellarg($apexDocroot) . " 2>&1",
 ];
 
 foreach ($commands as $command) {
