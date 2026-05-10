@@ -34,15 +34,18 @@ jobs:
           npm ci
           npm run build
 
-      - name: Upload frontend via FTP
-        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
-        with:
-          server: ${{ secrets.HOSTINGER_HOST }}
-          username: ${{ secrets.FTP_USER }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          local-dir: ./dist/
-          server-dir: ./public_html/
-          timeout: 600000
+      - name: Push Build Artifacts to Branch
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          # Switch to an orphan branch so we only push the dist folder
+          git checkout --orphan ui-build
+          git rm -rf .
+          # Move dist contents to root and commit them
+          mv dist/* ./
+          git add -A
+          git commit -m "Deploy UI build to ui-build branch"
+          git push origin ui-build --force
 
       - name: Hit Deployment Webhook (Backend via Pull)
         run: |

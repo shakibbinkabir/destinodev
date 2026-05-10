@@ -57,7 +57,16 @@ $commands = [
     "cd $appDir/backend && php artisan route:clear 2>&1",
     "cd $appDir/backend && php artisan route:cache 2>&1",
     "cd $appDir/backend && php artisan view:clear 2>&1",
-    "cd $appDir/backend && php artisan view:cache 2>&1"
+    "cd $appDir/backend && php artisan view:cache 2>&1",
+
+    "echo '==> Deploying UI build artifacts'",
+    // Fetch the ui-build branch (which contains strictly the compiled dist contents)
+    "cd $appDir && git fetch --depth=1 origin ui-build 2>&1",
+    // We will extract the frontend files into the apex domain docroot (or adjust to your specific React folder path)
+    // The typical Hostinger path for the main domain when the API is on a subdomain is '../destinocojp.com/public_html'
+    // I am assuming \$apexDocroot is where the frontend lives based on the FTP destination './public_html/'
+    "echo 'Extracting frontend into ' $apexDocroot",
+    "cd $appDir && git archive origin/ui-build | tar -x -C $apexDocroot 2>&1"
 ];
 
 foreach ($commands as $command) {
