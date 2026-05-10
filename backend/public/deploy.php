@@ -33,40 +33,46 @@ echo "Starting deployment...\n";
 // Hostinger shared hosting environment typical paths
 $appDir = realpath(__DIR__ . '/../../'); 
 $apexDocroot = realpath($appDir . '/../');
+$homeDir = realpath($apexDocroot . '/../../'); // usually /home/uXXXXXXX
 
 // Help shell_exec find PHP, Composer, and Node/NPM
-putenv('PATH=/usr/local/bin:/usr/bin:/bin:' . getenv('PATH'));
+putenv("HOME=$homeDir");
+putenv("COMPOSER_HOME=$homeDir/.composer");
+putenv('PATH=' . $homeDir . '/.nvm/versions/node/current/bin:/usr/local/bin:/usr/bin:/bin:' . getenv('PATH'));
 
 $commands = [
     "echo '==> Pulling latest main'",
-    "cd $appDir && git fetch --depth=1 origin main",
-    "cd $appDir && git reset --hard origin/main",
+    "cd $appDir && git fetch --depth=1 origin main 2>&1",
+    "cd $appDir && git reset --hard origin/main 2>&1",
     
     "echo '==> Installing backend dependencies'",
-    "cd $appDir/backend && composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist",
+    // Composer now knows whereHOME is so it won't crash
+    "cd $appDir/backend && composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist 2>&1",
     
     "echo '==> Running migrations & clearing caches'",
-    "cd $appDir/backend && php artisan migrate --force",
-    "cd $appDir/backend && php artisan config:clear",
-    "cd $appDir/backend && php artisan config:cache",
-    "cd $appDir/backend && php artisan route:clear",
-    "cd $appDir/backend && php artisan route:cache",
-    "cd $appDir/backend && php artisan view:clear",
-    "cd $appDir/backend && php artisan view:cache",
+    "cd $appDir/backend && php artisan migrate --force 2>&1",
+    "cd $appDir/backend && php artisan config:clear 2>&1",
+    "cd $appDir/backend && php artisan config:cache 2>&1",
+    "cd $appDir/backend && php artisan route:clear 2>&1",
+    "cd $appDir/backend && php artisan route:cache 2>&1",
+    "cd $appDir/backend && php artisan view:clear 2>&1",
+    "cd $appDir/backend && php artisan view:cache 2>&1",
 
     "echo '==> Installing frontend dependencies (if npm is available)'",
-    "cd $appDir && if command -v npm >/dev/null 2>&1; then npm ci --no-audit --no-fund; else echo 'NPM not found'; fi",
+    // Use bash -l (login shell) so that Hostinger's Node/NVM paths get loaded automatically
+    "cd $appDir && bash -l -c 'if command -v npm >/dev/null 2>&1; then npm ci --no-audit --no-fund; else echo \"NPM not found\"; fi' 2>&1",
     
     "echo '==> Building frontend'",
-    "cd $appDir && if command -v npm >/dev/null 2>&1; then npm run build; fi",
+    "cd $appDir && bash -l -c 'if command -v npm >/dev/null 2>&1; then npm run build; fi' 2>&1",
 
     "echo '==> Publishing frontend artifacts'",
-    "cd $appDir && if [ -d \"dist\" ]; then cp -rf dist/. $apexDocroot/; else echo 'No dist folder found'; fi"
+    "cd $appDir && if [ -d \"dist\" ]; then cp -rf dist/. $apexDocroot/; else echo 'No dist folder found'; fi 2>&1"
 ];
 
 foreach ($commands as $command) {
     echo "$command\n";
-    $output = shell_exec($command . ' 2>&1');
+    // We already appened 2>&1 so we can just execute
+    $output = shell_exec($command);
     echo $output . "\n";
 }
 
