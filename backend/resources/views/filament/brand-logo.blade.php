@@ -9,4 +9,5 @@
     src="{{ rtrim(config('app.frontend_url'), '/') }}/logo-link.png"
     alt="Destino"
     class="h-8 w-auto select-none"
+    style="filter: brightness(0) invert(1);"
 >
