@@ -22,3 +22,6 @@ backend/storage/framework/views/*
 backend/database/*.sqlite
 backend/database/*.sqlite-journal
 backend/bootstrap/cache/*.php
+
+# Miscellaneous
+JDM One price Api/
