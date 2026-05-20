@@ -216,11 +216,27 @@ class OnePriceStockService
         }
 
         $parts = array_map('trim', explode('#', $raw));
-
-        return array_values(array_filter(
+        $urls = array_values(array_filter(
             $parts,
             static fn (string $u) => $u !== '' && (str_starts_with($u, 'http://') || str_starts_with($u, 'https://')),
         ));
+
+        // Vendor convention: `number=0` is the auction inspection schematic
+        // (line-drawn condition diagram), `number=1+` are real photographs.
+        // Their own `searchImg` field always points to `number=1`, confirming
+        // this. Push any sheet URLs to the end so the public gallery leads
+        // with photos and the schematic shows up last.
+        $sheets = [];
+        $photos = [];
+        foreach ($urls as $u) {
+            if (preg_match('/[?&]number=0(?:&|$)/', $u)) {
+                $sheets[] = $u;
+            } else {
+                $photos[] = $u;
+            }
+        }
+
+        return array_merge($photos, $sheets);
     }
 
     protected function titleCase(string $raw): string

@@ -66,8 +66,8 @@ function onePriceItem(array $overrides = []): array
         'colorRef' => '9',
         'scoresEn' => '4',
         'result' => 'Available',
-        'jdmPictures' => 'https://p1.jdmauction.live/pic/?a=1#https://p1.jdmauction.live/pic/?a=2#https://p1.jdmauction.live/pic/?a=3',
-        'searchImg' => 'https://p1.jdmauction.live/pic/?a=1',
+        'jdmPictures' => 'https://p1.jdmauction.live/pic/?system=auto&date=2026-04-09&auct=149&bid=65134&number=0#https://p1.jdmauction.live/pic/?system=auto&date=2026-04-09&auct=149&bid=65134&number=1#https://p1.jdmauction.live/pic/?system=auto&date=2026-04-09&auct=149&bid=65134&number=2',
+        'searchImg' => 'https://p1.jdmauction.live/pic/?system=auto&date=2026-04-09&auct=149&bid=65134&number=1',
         'parsedDataEn' => '<![CDATA[{" form ":" sedan "}]]>',
     ], $overrides);
 }
@@ -126,6 +126,10 @@ it('creates new cars and replaces images on first run', function () {
     expect($car->auction_grade)->toBe('4');
     expect($car->images)->toHaveCount(3);
     expect($car->images->first()->is_primary)->toBeTrue();
+    // Auction-sheet (number=0) must be last; photos (number=1, 2) lead.
+    expect($car->images[0]->path)->toContain('number=1');
+    expect($car->images[1]->path)->toContain('number=2');
+    expect($car->images[2]->path)->toContain('number=0');
 });
 
 it('walks pagination across pages until the last page is reached', function () {
