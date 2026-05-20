@@ -44,8 +44,12 @@ return [
     ],
 
     'one_price_stock' => [
-        'url' => env('ONE_PRICE_STOCK_API_URL'),
+        'base_url' => env('ONE_PRICE_STOCK_API_URL', 'https://jdmauction.live/oneprice/api'),
+        'username' => env('ONE_PRICE_STOCK_API_USERNAME'),
         'key' => env('ONE_PRICE_STOCK_API_KEY'),
+        // CSV of maker.company_id values to iterate during scheduled sync.
+        // See database/data/oneprice/makers.json for the lookup (e.g. 9 = TOYOTA).
+        'makers' => env('ONE_PRICE_STOCK_MAKERS'),
     ],
 
 ];

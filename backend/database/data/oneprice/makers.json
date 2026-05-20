@@ -1,0 +1,176 @@
+[
+    {
+        "company_id": 1,
+        "country": "JAPAN",
+        "name": "DAIHATSU",
+        "serial": 7
+    },
+    {
+        "company_id": 2,
+        "country": "JAPAN",
+        "name": "HONDA",
+        "serial": 2
+    },
+    {
+        "company_id": 3,
+        "country": "JAPAN",
+        "name": "ISUZU",
+        "serial": 27
+    },
+    {
+        "company_id": 4,
+        "country": "JAPAN",
+        "name": "MAZDA",
+        "serial": 4
+    },
+    {
+        "company_id": 5,
+        "country": "JAPAN",
+        "name": "MITSUBISHI",
+        "serial": 5
+    },
+    {
+        "company_id": 6,
+        "country": "JAPAN",
+        "name": "NISSAN",
+        "serial": 3
+    },
+    {
+        "company_id": 7,
+        "country": "JAPAN",
+        "name": "SUBARU",
+        "serial": 10
+    },
+    {
+        "company_id": 8,
+        "country": "JAPAN",
+        "name": "SUZUKI",
+        "serial": 8
+    },
+    {
+        "company_id": 9,
+        "country": "JAPAN",
+        "name": "TOYOTA",
+        "serial": 1
+    },
+    {
+        "company_id": 10,
+        "country": "JAPAN",
+        "name": "OTHER TECHNICS",
+        "serial": 29
+    },
+    {
+        "company_id": 30,
+        "country": "JAPAN",
+        "name": "HINO",
+        "serial": 9
+    },
+    {
+        "company_id": 34,
+        "country": "JAPAN",
+        "name": "MITSUOKA",
+        "serial": 30
+    },
+    {
+        "company_id": 47,
+        "country": "JAPAN",
+        "name": "YANMAR",
+        "serial": 11
+    },
+    {
+        "company_id": 56,
+        "country": "JAPAN",
+        "name": "FORD JAPAN",
+        "serial": 12
+    },
+    {
+        "company_id": 59,
+        "country": "JAPAN",
+        "name": "LEXUS",
+        "serial": 6
+    },
+    {
+        "company_id": 80,
+        "country": "JAPAN",
+        "name": "KOMATSU",
+        "serial": 13
+    },
+    {
+        "company_id": 81,
+        "country": "JAPAN",
+        "name": "KOBELCO",
+        "serial": 14
+    },
+    {
+        "company_id": 84,
+        "country": "JAPAN",
+        "name": "TADANO",
+        "serial": 15
+    },
+    {
+        "company_id": 85,
+        "country": "JAPAN",
+        "name": "SUMITOMO",
+        "serial": 16
+    },
+    {
+        "company_id": 87,
+        "country": "JAPAN",
+        "name": "KUBOTA",
+        "serial": 17
+    },
+    {
+        "company_id": 88,
+        "country": "JAPAN",
+        "name": "KATO",
+        "serial": 18
+    },
+    {
+        "company_id": 89,
+        "country": "JAPAN",
+        "name": "HANIX",
+        "serial": 19
+    },
+    {
+        "company_id": 90,
+        "country": "JAPAN",
+        "name": "TCM",
+        "serial": 20
+    },
+    {
+        "company_id": 91,
+        "country": "JAPAN",
+        "name": "HITACHI",
+        "serial": 21
+    },
+    {
+        "company_id": 102,
+        "country": "JAPAN",
+        "name": "FUJI HEAVY",
+        "serial": 22
+    },
+    {
+        "company_id": 106,
+        "country": "JAPAN",
+        "name": "ISEKI",
+        "serial": 23
+    },
+    {
+        "company_id": 107,
+        "country": "JAPAN",
+        "name": "KAWASAKI",
+        "serial": 24
+    },
+    {
+        "company_id": 108,
+        "country": "JAPAN",
+        "name": "YAMAHA",
+        "serial": 25
+    },
+    {
+        "company_id": 113,
+        "country": "JAPAN",
+        "name": "NISSAN DIESEL (UD)",
+        "serial": 26
+    }
+]

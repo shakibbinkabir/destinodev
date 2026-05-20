@@ -14,6 +14,10 @@ class Car extends Model
 
     protected $fillable = [
         'external_id',
+        'lot_bid',
+        'chassis_code',
+        'auction_house',
+        'auction_grade',
         'make',
         'model',
         'year',
