@@ -47,11 +47,17 @@ class CarResource extends Resource
                         ->maxValue((int) date('Y') + 1)
                         ->disabled(fn (?Car $record) => $record?->source === 'api')
                         ->dehydrated(),
+                    // The `price_jpy` column stores the USD base price (the
+                    // One-Price API and operators both work in USD). Customers
+                    // see a Yen price computed client-side from the MUFG rate;
+                    // see App\Services\ExchangeRateService. The column name is a
+                    // legacy misnomer kept to avoid a data migration.
                     Forms\Components\TextInput::make('price_jpy')
-                        ->label('Price (JPY)')
+                        ->label('Price (USD)')
                         ->required()
                         ->numeric()
-                        ->prefix('¥')
+                        ->prefix('$')
+                        ->helperText('Base FOB price in USD. Customers see this converted to Yen automatically.')
                         ->disabled(fn (?Car $record) => $record?->source === 'api')
                         ->dehydrated(),
                     Forms\Components\TextInput::make('condition')
@@ -244,8 +250,8 @@ class CarResource extends Resource
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('price_jpy')
-                    ->label('Price (JPY)')
-                    ->money('JPY')
+                    ->label('Price (USD)')
+                    ->money('USD')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('source')
                     ->badge()
