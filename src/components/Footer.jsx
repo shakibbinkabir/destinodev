@@ -120,7 +120,6 @@ export default function Footer() {
       <div className="footer__bottom">
         <div className="wrap footer__bottom-inner">
           <p>&copy; {new Date().getFullYear()} {companyName}. All rights reserved.</p>
-          <p>Member of JUMVEA (Japan Used Motor Vehicle Exporters Association)</p>
         </div>
       </div>
     </footer>

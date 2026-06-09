@@ -18,8 +18,8 @@ use Illuminate\Support\Arr;
 /**
  * Operator-friendly settings page. Replaces the SettingResource CRUD table
  * (which exposed schema concepts like "key", "type", "group" to non-technical
- * users). Each section maps to a real-world concern: company info, contact,
- * social media, SEO, integrations.
+ * users). Each section maps to a real-world concern: company info, social
+ * media, homepage sections, SEO, integrations.
  *
  * Storage stays in the settings table via Setting::get/set, so existing
  * consumers (NewInquiryNotification recipient resolution, frontend reads,
@@ -28,10 +28,11 @@ use Illuminate\Support\Arr;
  * Design notes:
  *   - Field names use dot notation that Filament natively nests into $data.
  *     On save we flatten back via Arr::dot() and call Setting::set() per row.
- *   - The Integrations section is collapsed by default and warning-tinted —
+ *   - The Integrations section is collapsed by default —
  *     casual users shouldn't accidentally edit a YouTube channel ID.
- *   - "JUMVEA member" is a Toggle so the checkbox value round-trips as 1/0
- *     through Setting::set(), matching the seeded `bool` type.
+ *   - The "Homepage sections" toggles are bools that round-trip as 1/0 through
+ *     Setting::set(), matching the seeded `bool` type; the homepage reads them
+ *     to show/hide the YouTube, Facebook, and Instagram sections.
  */
 class Settings extends Page implements HasForms
 {

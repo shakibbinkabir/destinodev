@@ -25,9 +25,6 @@ export default function AboutPage() {
   const fax = get(settings, 'company.fax', '+81-45-482-6444');
   const email = get(settings, 'company.email', 'export@destino.jp');
   const businessHours = get(settings, 'company.business_hours', 'Tue–Sat 10:00–19:00 / Sun & Holidays 10:00–18:00 / Monday Closed');
-  const memberships = get(settings, 'company.jumvea_member', true)
-    ? 'Japan Used Motor Vehicle Exporters Association (JUMVEA)'
-    : '—';
 
   const services = servicesQuery.data || [];
 
@@ -137,7 +134,6 @@ export default function AboutPage() {
               <tr><td>Phone</td><td>{phone}</td></tr>
               <tr><td>Fax</td><td>{fax}</td></tr>
               <tr><td>Email</td><td>{email}</td></tr>
-              <tr><td>Memberships</td><td>{memberships}</td></tr>
               <tr><td>Group Company</td><td><a href="https://destinocojp.com" target="_blank" rel="noopener noreferrer">Destino Pte Ltd</a> — Car Wash Solutions (Singapore)</td></tr>
             </tbody>
           </table>
