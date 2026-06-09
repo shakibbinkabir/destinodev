@@ -1,0 +1,50 @@
+.social-feed {
+  display: flex;
+  justify-content: center;
+}
+
+/* Facebook Page Plugin iframe */
+.social-feed--facebook {
+  width: 100%;
+}
+
+.social-feed__facebook-frame {
+  width: 100%;
+  max-width: 500px;
+  height: 620px;
+  border: none;
+  overflow: hidden;
+  background: var(--white);
+}
+
+/* Instagram profile CTA card (URL-based; no token-free profile feed exists) */
+.social-feed--instagram {
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  width: 100%;
+  max-width: 460px;
+  margin: 0 auto;
+  padding: var(--space-xl);
+  text-align: center;
+  color: var(--white);
+  background: linear-gradient(135deg, #feda75 0%, #fa7e1e 25%, #d62976 50%, #962fbf 75%, #4f5bd5 100%);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+
+.social-feed--instagram:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+}
+
+.social-feed__instagram-cta {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.social-feed__instagram-handle {
+  font-size: 13px;
+  font-weight: 300;
+  opacity: 0.92;
+}

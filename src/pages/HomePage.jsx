@@ -8,6 +8,8 @@ import ProcessSteps from '../components/ProcessSteps';
 import TestimonialSlider from '../components/TestimonialSlider';
 import CTABanner from '../components/CTABanner';
 import Partners from '../components/Partners';
+import FacebookFeed from '../components/FacebookFeed';
+import InstagramFeed from '../components/InstagramFeed';
 import Loading from '../components/Loading';
 import ErrorState from '../components/ErrorState';
 import { useApi } from '../hooks/useApi';
@@ -51,6 +53,14 @@ export default function HomePage() {
   const { settings } = useSettings();
   const channelId = get(settings, 'integrations.youtube_channel_id', 'UC9r_ugFs9RL4OkeEAwztQ7g');
   const channelUrl = `https://www.youtube.com/channel/${channelId}`;
+
+  // Homepage social-section visibility (admin-controlled). YouTube defaults on;
+  // Facebook/Instagram stay off until a URL is configured + the toggle is set.
+  const youtubeEnabled = get(settings, 'homepage.youtube_enabled', true);
+  const facebookEnabled = get(settings, 'homepage.facebook_enabled', false);
+  const instagramEnabled = get(settings, 'homepage.instagram_enabled', false);
+  const facebookUrl = get(settings, 'social.facebook', '');
+  const instagramUrl = get(settings, 'social.instagram', '');
 
   const heroQuery = useApi((signal) => getHeroSlides({ signal }), []);
   const featuredQuery = useApi(
@@ -223,7 +233,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {videos.length > 0 && (
+      {youtubeEnabled && videos.length > 0 && (
         <section className="section section--light">
           <div className="wrap">
             <div className="section-header">
@@ -267,6 +277,28 @@ export default function HomePage() {
                 </a>
               ))}
             </div>
+          </div>
+        </section>
+      )}
+
+      {facebookEnabled && facebookUrl && (
+        <section className="section section--white">
+          <div className="wrap">
+            <div className="text-center" style={{ marginBottom: 'var(--space-xl)' }}>
+              <h2>Follow Us on Facebook</h2>
+            </div>
+            <FacebookFeed url={facebookUrl} />
+          </div>
+        </section>
+      )}
+
+      {instagramEnabled && instagramUrl && (
+        <section className="section section--light">
+          <div className="wrap">
+            <div className="text-center" style={{ marginBottom: 'var(--space-xl)' }}>
+              <h2>Follow Us on Instagram</h2>
+            </div>
+            <InstagramFeed url={instagramUrl} />
           </div>
         </section>
       )}
