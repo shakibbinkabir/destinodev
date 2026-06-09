@@ -12,6 +12,11 @@ use Illuminate\Database\Seeder;
  * values are "#" placeholders we store empty strings (per Stage 2
  * instructions). Real social URLs are tracked under the Stage 4 inputs
  * required from the client (see BLOCKERS.md).
+ *
+ * Create-only (firstOrCreate): re-running this seeder on a live install ADDS
+ * any missing keys but never overwrites existing values — so an operator's
+ * admin-panel edits (company info, social URLs, SEO, homepage toggles) survive
+ * a reseed. Retired keys are pruned explicitly at the end.
  */
 class SettingsSeeder extends Seeder
 {
@@ -51,7 +56,9 @@ class SettingsSeeder extends Seeder
         ];
 
         foreach ($entries as [$key, $value, $type, $group, $label]) {
-            Setting::updateOrCreate(
+            // firstOrCreate, NOT updateOrCreate: never clobber an existing value
+            // (operator edits via the admin panel must survive a reseed).
+            Setting::firstOrCreate(
                 ['key' => $key],
                 [
                     'value' => $value,
