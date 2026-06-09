@@ -60,7 +60,6 @@ class Settings extends Page implements HasForms
                 'representative' => Setting::get('company.representative', ''),
                 'address'        => Setting::get('company.address', ''),
                 'business_hours' => Setting::get('company.business_hours', ''),
-                'jumvea_member'  => (bool) Setting::get('company.jumvea_member', false),
             ],
             'social' => [
                 'facebook'  => Setting::get('social.facebook', ''),
@@ -68,6 +67,11 @@ class Settings extends Page implements HasForms
                 'youtube'   => Setting::get('social.youtube', ''),
                 'linkedin'  => Setting::get('social.linkedin', ''),
                 'x'         => Setting::get('social.x', ''),
+            ],
+            'homepage' => [
+                'youtube_enabled'   => (bool) Setting::get('homepage.youtube_enabled', true),
+                'facebook_enabled'  => (bool) Setting::get('homepage.facebook_enabled', false),
+                'instagram_enabled' => (bool) Setting::get('homepage.instagram_enabled', false),
             ],
             'seo' => [
                 'default_meta_title'       => Setting::get('seo.default_meta_title', ''),
@@ -120,23 +124,36 @@ class Settings extends Page implements HasForms
                             ->rows(3)
                             ->columnSpanFull()
                             ->helperText('One line per day. Shown verbatim on the contact page.'),
-                        Toggle::make('company.jumvea_member')
-                            ->label('JUMVEA member')
-                            ->helperText('Displays the JUMVEA badge on the public site.')
-                            ->columnSpanFull(),
                     ]),
 
                 Section::make('Social media')
-                    ->description('Footer icons link to these. Leave a field blank to hide that icon.')
+                    ->description('Footer icons link to these, and the homepage Facebook/Instagram sections embed them. Leave a field blank to hide that icon.')
                     ->icon('heroicon-o-share')
                     ->collapsible()
                     ->columns(2)
                     ->schema([
-                        TextInput::make('social.facebook')->label('Facebook URL')->url()->placeholder('https://facebook.com/...'),
-                        TextInput::make('social.instagram')->label('Instagram URL')->url()->placeholder('https://instagram.com/...'),
+                        TextInput::make('social.facebook')->label('Facebook URL')->url()->placeholder('https://facebook.com/YourPage')->helperText('Your Facebook Page URL — also feeds the homepage Facebook section.'),
+                        TextInput::make('social.instagram')->label('Instagram URL')->url()->placeholder('https://instagram.com/yourprofile')->helperText('Your Instagram profile URL — also feeds the homepage Instagram section.'),
                         TextInput::make('social.youtube')->label('YouTube URL')->url()->placeholder('https://youtube.com/...'),
                         TextInput::make('social.linkedin')->label('LinkedIn URL')->url()->placeholder('https://linkedin.com/...'),
                         TextInput::make('social.x')->label('X (Twitter) URL')->url()->placeholder('https://x.com/...'),
+                    ]),
+
+                Section::make('Homepage sections')
+                    ->description('Show or hide the social sections at the bottom of the homepage. Their content comes from the YouTube channel ID (Integrations) and the Facebook/Instagram URLs (Social media) above.')
+                    ->icon('heroicon-o-window')
+                    ->collapsible()
+                    ->columns(3)
+                    ->schema([
+                        Toggle::make('homepage.youtube_enabled')
+                            ->label('YouTube section')
+                            ->helperText('Latest videos from the configured channel.'),
+                        Toggle::make('homepage.facebook_enabled')
+                            ->label('Facebook section')
+                            ->helperText('Embeds the Facebook Page above. Needs a Facebook URL.'),
+                        Toggle::make('homepage.instagram_enabled')
+                            ->label('Instagram section')
+                            ->helperText('Links to the Instagram profile above. Needs an Instagram URL.'),
                     ]),
 
                 Section::make('Search engines (SEO)')

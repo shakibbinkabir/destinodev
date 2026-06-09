@@ -12,7 +12,7 @@ beforeEach(function () {
 
 it('returns a flat key->value object with type coercion', function () {
     Setting::create(['key' => 'company.name', 'value' => 'Destino', 'type' => 'string']);
-    Setting::create(['key' => 'company.jumvea_member', 'value' => '1', 'type' => 'bool']);
+    Setting::create(['key' => 'homepage.youtube_enabled', 'value' => '1', 'type' => 'bool']);
     Setting::create(['key' => 'company.year_founded', 'value' => '1995', 'type' => 'int']);
     Setting::create(['key' => 'social.networks', 'value' => json_encode(['fb', 'ig']), 'type' => 'json']);
 
@@ -26,7 +26,7 @@ it('returns a flat key->value object with type coercion', function () {
     $data = $response->json('data');
 
     expect($data['company.name'])->toBe('Destino');
-    expect($data['company.jumvea_member'])->toBeTrue();
+    expect($data['homepage.youtube_enabled'])->toBeTrue();
     expect($data['company.year_founded'])->toBe(1995);
     expect($data['social.networks'])->toEqual(['fb', 'ig']);
 });

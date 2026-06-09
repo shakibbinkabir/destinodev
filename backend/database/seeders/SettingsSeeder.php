@@ -27,7 +27,6 @@ class SettingsSeeder extends Seeder
             ['company.address', '5-20-25 Chigasaki-Minami, Tsuzuki-ku, Yokohama, Kanagawa 224-0037, Japan', 'string', 'company', 'Address'],
             ['company.business_hours', "Tuesday – Saturday 10:00–19:00\nSunday & Holidays 10:00–18:00\nMonday Closed", 'string', 'company', 'Business hours'],
             ['company.representative', 'Takeshi Yamamoto', 'string', 'company', 'Representative'],
-            ['company.jumvea_member', '1', 'bool', 'company', 'JUMVEA member'],
 
             // Social — frontend uses "#" as placeholder; we store empty strings.
             ['social.facebook', '', 'url', 'social', 'Facebook URL'],
@@ -42,6 +41,13 @@ class SettingsSeeder extends Seeder
 
             // Integrations
             ['integrations.youtube_channel_id', 'UC9r_ugFs9RL4OkeEAwztQ7g', 'string', 'integrations', 'YouTube channel ID'],
+
+            // Homepage section visibility toggles. YouTube is on by default
+            // (a channel ID is seeded); Facebook/Instagram stay off until the
+            // operator fills in social.facebook / social.instagram URLs.
+            ['homepage.youtube_enabled', '1', 'bool', 'homepage', 'Show YouTube section'],
+            ['homepage.facebook_enabled', '0', 'bool', 'homepage', 'Show Facebook section'],
+            ['homepage.instagram_enabled', '0', 'bool', 'homepage', 'Show Instagram section'],
         ];
 
         foreach ($entries as [$key, $value, $type, $group, $label]) {
