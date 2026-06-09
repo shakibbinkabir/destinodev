@@ -19,6 +19,9 @@ Artisan::command('inspire', function () {
 |
 |   - stock:sync hourly: re-syncs the One-Price Stock catalog. Skips
 |     gracefully when credentials are CHANGE_ME placeholders.
+|   - exchange-rate:sync every 3 hours: re-scrapes MUFG for the USD→JPY rate
+|     (T.T.B. − offset). Self-heals — keeps the last-known value when MUFG
+|     publishes "----" (unconfirmed) outside its update windows.
 |   - queue:work --stop-when-empty every minute: drains the database queue
 |     used by inquiry/review mailables. --stop-when-empty avoids the need
 |     for a long-running supervisor process on shared hosting.
@@ -30,6 +33,13 @@ Schedule::command('stock:sync')
     ->withoutOverlapping()
     ->onFailure(function (): void {
         Log::error('Scheduled stock:sync run failed — see prior log entries for the upstream error.');
+    });
+
+Schedule::command('exchange-rate:sync')
+    ->everyThreeHours()
+    ->withoutOverlapping()
+    ->onFailure(function (): void {
+        Log::error('Scheduled exchange-rate:sync run failed — see prior log entries for the upstream error.');
     });
 
 Schedule::command('queue:work --stop-when-empty --tries=3')
