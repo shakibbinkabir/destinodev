@@ -5,24 +5,25 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 
-const MUFG_URL = 'https://www.bk.mufg.jp/ippan/kinri/list_j/kinri/kawase.html';
+const MUFG_URL = 'https://www.bk.mufg.jp/gdocs/kinri/kinri_data_utf8.js';
 
 /**
- * A trimmed snapshot of the MUFG rate table. USD is fully populated; SEK is
- * dash-padded (CASH S. / CASH B. unconfirmed) to exercise positional parsing —
- * a naive "Nth number" reader would misalign SEK's columns.
- *
- * Column order: T.T.S., ACC., CASH S., T.T.B., A/S, D/P・D/A, CASH B.
+ * A trimmed snapshot of the MUFG data feed (kinri_data_utf8.js). Values are
+ * space-padded strings keyed by element id; USD T.T.B. is G001TTBZ. The page
+ * itself ships every cell as "----" and fills them in from this feed.
  */
-function mufgHtml(string $usdTtb = '159.32'): string
+function mufgFeed(string $usdTtb = '159.32'): string
 {
-    return <<<HTML
-    <table>
-      <tr><th>通貨名</th><th>T.T.S.</th><th>ACC.</th><th>CASH S.</th><th>T.T.B.</th><th>A/S</th><th>D/P・D/A</th><th>CASH B.</th></tr>
-      <tr><td>001</td><td>USD<br>(米ドル)</td><td>161.32</td><td>161.73</td><td>163.12</td><td>{$usdTtb}</td><td>158.91</td><td>158.61</td><td>157.32</td></tr>
-      <tr><td>007</td><td>SEK<br>(スウェーデン・クローナ)</td><td>17.38</td><td>17.42</td><td>----</td><td>16.58</td><td>16.54</td><td>16.48</td><td>----</td></tr>
-    </table>
-    HTML;
+    return <<<JS
+    var kinri_deta = {
+     "G001TTSZ":"   161.32",
+     "G001CASS":"   163.12",
+     "G001TTBZ":"   {$usdTtb}",
+     "G001CASB":"   157.32",
+     "G001DATE":"2026/06/09 10:26",
+     "G007TTBZ":"    16.58"
+    };
+    JS;
 }
 
 beforeEach(function () {
@@ -31,15 +32,15 @@ beforeEach(function () {
     Config::set('services.exchange_rate.ttb_offset', 4);
 });
 
-it('parses the USD T.T.B. column positionally, ignoring dash-padded rows', function () {
-    $ttb = app(ExchangeRateService::class)->parse(mufgHtml('159.32'));
+it('parses the USD T.T.B. value (G001TTBZ) from the MUFG data feed', function () {
+    $ttb = app(ExchangeRateService::class)->parse(mufgFeed('159.32'));
 
     expect($ttb)->toBe(159.32);
 });
 
 it('fetches a fresh rate (TTB − 4), caches it, and returns stale=false', function () {
     Http::fake([
-        'www.bk.mufg.jp/*' => Http::response(mufgHtml('159.32'), 200),
+        'www.bk.mufg.jp/*' => Http::response(mufgFeed('159.32'), 200),
     ]);
 
     $response = $this->getJson('/api/v1/exchange-rate');
@@ -56,7 +57,7 @@ it('fetches a fresh rate (TTB − 4), caches it, and returns stale=false', funct
 
 it('serves the cached value on the second call without re-hitting upstream', function () {
     Http::fake([
-        'www.bk.mufg.jp/*' => Http::response(mufgHtml('150.50'), 200),
+        'www.bk.mufg.jp/*' => Http::response(mufgFeed('150.50'), 200),
     ]);
 
     $this->getJson('/api/v1/exchange-rate')->assertStatus(200);
@@ -92,7 +93,7 @@ it('falls back to last_known when MUFG publishes "----" (unconfirmed) for USD', 
     ]);
 
     Http::fake([
-        'www.bk.mufg.jp/*' => Http::response(mufgHtml('----'), 200),
+        'www.bk.mufg.jp/*' => Http::response(mufgFeed('----'), 200),
     ]);
 
     $this->getJson('/api/v1/exchange-rate')

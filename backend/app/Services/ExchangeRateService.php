@@ -17,13 +17,15 @@ use RuntimeException;
  *
  *     rate = USD T.T.B. - offset   (offset defaults to ¥4)
  *
- * Source page (Japanese, server-rendered HTML table):
- *   https://www.bk.mufg.jp/ippan/kinri/list_j/kinri/kawase.html
+ * Data feed (NOT the kawase.html page — that page ships every cell as "----"
+ * and fills them in client-side from this same feed via kawase_utf8.js):
+ *   https://www.bk.mufg.jp/gdocs/kinri/kinri_data_utf8.js
  *
- * The page marks unconfirmed rates with "----" (outside the bank's update
- * windows, e.g. nights/weekends USD can read "----" on every column). In that
- * case fetchFresh() throws and getUsdJpy() serves the last-known value with
- * stale=true, matching the original cache contract.
+ * The feed is `var kinri_deta = { "G001TTBZ":"   159.32", ... }`; USD T.T.B.
+ * is keyed G001TTBZ (the element id the page would inject it into). When MUFG
+ * has not published a rate the value reads "----"; in that case fetchFresh()
+ * throws and getUsdJpy() serves the last-known value with stale=true, matching
+ * the original cache contract.
  *
  * NOTE — PRD DEVIATION (CLAUDE.md rule 1): PRD §6.4.4 specified
  * exchangerate-api.com with a 12 h cache. The client overrode this to the
@@ -132,46 +134,31 @@ class ExchangeRateService
     }
 
     /**
-     * Extract the USD T.T.B. rate (4th rate column) from the MUFG page HTML.
+     * Extract the USD T.T.B. rate from the MUFG data feed.
      *
-     * Column order per row: T.T.S., ACC., CASH S., T.T.B., A/S, D/P・D/A, CASH B.
-     * Cells may be a number or a placeholder ("----" unconfirmed, "****"/"*"
-     * not handled), so we read positionally rather than by "Nth number" —
-     * dash-padded rows (e.g. QAR) would otherwise misalign the column.
+     * The feed body looks like:
+     *   var kinri_deta = { ... "G001TTBZ":"   159.32", "G001DATE":"2026/06/09 10:26", ... }
+     * USD T.T.B. is keyed G001TTBZ (values are space-padded strings). When MUFG
+     * has not published, the value reads "----".
      *
-     * Throws when the USD row is missing or its T.T.B. cell is unconfirmed.
+     * Throws when the key is missing or its value is non-numeric (unconfirmed).
      */
-    public function parse(string $html): float
+    public function parse(string $body): float
     {
-        if (trim($html) === '') {
-            throw new RuntimeException('exchange-rate: MUFG page body is empty.');
+        if (trim($body) === '') {
+            throw new RuntimeException('exchange-rate: MUFG data feed is empty.');
         }
 
-        // Flatten markup to text. Replace every tag with a space (NOT strip_tags,
-        // which would glue adjacent cells: "<td>161.32</td><td>161.73</td>" must
-        // not become "161.32161.73"). Then decode entities and collapse runs of
-        // whitespace, including the &nbsp; (U+00A0) MUFG pads cells with.
-        $text = (string) preg_replace('/<[^>]+>/', ' ', $html);
-        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5);
-        $text = (string) preg_replace('/[\s\x{00A0}]+/u', ' ', $text);
-
-        // The USD row runs from the "USD" code to the next 3-letter currency
-        // code (GBP). `u` for the Japanese label, `s` so `.` spans the cells.
-        if (! preg_match('/USD\b(.*?)(?=[A-Z]{3}\b|$)/su', $text, $m)) {
-            throw new RuntimeException('exchange-rate: USD row not found in MUFG page.');
+        if (! preg_match('/"G001TTBZ"\s*:\s*"([^"]*)"/', $body, $m)) {
+            throw new RuntimeException('exchange-rate: USD T.T.B. key (G001TTBZ) not found in MUFG data feed.');
         }
 
-        // Cells in column order: a number (optional thousands separators) or a
-        // dash/asterisk placeholder.
-        preg_match_all('/(\d[\d,]*\.\d+)|(-{2,})|(\*{1,4})/u', $m[1], $cells, PREG_SET_ORDER);
-
-        // Index 3 == 4th column == T.T.B.
-        $ttbCell = $cells[3][1] ?? '';
-        if ($ttbCell === '') {
-            throw new RuntimeException('exchange-rate: USD T.T.B. is unconfirmed (----) or missing.');
+        $raw = trim(str_replace(',', '', $m[1]));
+        if (! is_numeric($raw)) {
+            throw new RuntimeException('exchange-rate: USD T.T.B. is unconfirmed ("'.$raw.'").');
         }
 
-        $ttb = (float) str_replace(',', '', $ttbCell);
+        $ttb = (float) $raw;
         if ($ttb <= 0) {
             throw new RuntimeException('exchange-rate: USD T.T.B. parsed as non-positive.');
         }

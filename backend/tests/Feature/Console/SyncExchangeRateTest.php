@@ -7,22 +7,24 @@ use Illuminate\Support\Facades\Http;
 
 beforeEach(function () {
     Cache::flush();
-    Config::set('services.exchange_rate.mufg_url', 'https://www.bk.mufg.jp/ippan/kinri/list_j/kinri/kawase.html');
+    Config::set('services.exchange_rate.mufg_url', 'https://www.bk.mufg.jp/gdocs/kinri/kinri_data_utf8.js');
     Config::set('services.exchange_rate.ttb_offset', 4);
 });
 
-function mufgSyncHtml(string $usdTtb = '159.32'): string
+function mufgSyncFeed(string $usdTtb = '159.32'): string
 {
-    return <<<HTML
-    <table>
-      <tr><td>001</td><td>USD<br>(米ドル)</td><td>161.32</td><td>161.73</td><td>163.12</td><td>{$usdTtb}</td><td>158.91</td><td>158.61</td><td>157.32</td></tr>
-      <tr><td>020</td><td>EUR<br>(ユーロ)</td><td>186.30</td><td>186.73</td><td>188.80</td><td>183.30</td><td>182.87</td><td>182.62</td><td>180.80</td></tr>
-    </table>
-    HTML;
+    return <<<JS
+    var kinri_deta = {
+     "G001TTSZ":"   161.32",
+     "G001TTBZ":"   {$usdTtb}",
+     "G001DATE":"2026/06/09 10:26",
+     "G020TTBZ":"   183.30"
+    };
+    JS;
 }
 
 it('refreshes the cached rate and reports success', function () {
-    Http::fake(['www.bk.mufg.jp/*' => Http::response(mufgSyncHtml('159.32'), 200)]);
+    Http::fake(['www.bk.mufg.jp/*' => Http::response(mufgSyncFeed('159.32'), 200)]);
 
     $this->artisan('exchange-rate:sync')->assertSuccessful();
 
