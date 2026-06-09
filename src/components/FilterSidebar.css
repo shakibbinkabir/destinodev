@@ -58,31 +58,6 @@
   flex: 1;
 }
 
-.filter-sidebar__source-toggle {
-  display: flex;
-  border: 1px solid var(--border);
-  margin-bottom: var(--space-md);
-}
-
-.filter-sidebar__source-btn {
-  flex: 1;
-  padding: 8px 4px;
-  font-size: 11px;
-  font-weight: 500;
-  color: #777;
-  text-align: center;
-  transition: background-color var(--transition), color var(--transition);
-}
-
-.filter-sidebar__source-btn + .filter-sidebar__source-btn {
-  border-left: 1px solid var(--border);
-}
-
-.filter-sidebar__source-btn--active {
-  background-color: var(--primary);
-  color: var(--white);
-}
-
 .filter-sidebar__group {
   border-bottom: 1px solid var(--border);
   padding-bottom: var(--space-md);

@@ -82,7 +82,7 @@ export default function ExchangeRate({ variant = 'compact' }) {
         </div>
       </div>
       <div className="exchange-rate__footer">
-        <span className="exchange-rate__source">via ExchangeRate-API{rate.stale ? ' (cached)' : ''}</span>
+        <span className="exchange-rate__source">via MUFG Bank{rate.stale ? ' (cached)' : ''}</span>
       </div>
     </div>
   );

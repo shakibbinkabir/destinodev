@@ -10,6 +10,8 @@ import Loading from '../components/Loading';
 import ErrorState from '../components/ErrorState';
 import { useApi } from '../hooks/useApi';
 import { useSettings, get } from '../hooks/useSettings';
+import { useExchangeRate } from '../hooks/useExchangeRate';
+import { formatPrice } from '../lib/currency';
 import { ApiError } from '../api/client';
 import { getCar, getSimilarCars } from '../api/cars';
 import './SingleCarPage.css';
@@ -38,6 +40,7 @@ function getVehicleType(fuel) {
 export default function SingleCarPage() {
   const { id } = useParams();
   const { settings } = useSettings();
+  const { rate } = useExchangeRate();
   const whatsappBase = get(settings, 'company.whatsapp_url', 'https://wa.me/81459496777');
 
   const carQuery = useApi((signal) => getCar(id, { signal }), [id]);
@@ -81,9 +84,6 @@ export default function SingleCarPage() {
 
   const car = carQuery.data;
   if (!car) return null;
-
-  const formatPrice = (price) =>
-    new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(price);
 
   const fullTitle = `${car.year} ${car.make} ${car.model}`;
   const stockId = String(car.id);
@@ -164,13 +164,10 @@ export default function SingleCarPage() {
 
           <div className="single-car-page__price-block">
             <span className="single-car-page__fob">FOB Japan</span>
-            <span className="single-car-page__price">{formatPrice(car.price)}</span>
+            <span className="single-car-page__price">{formatPrice(car.price, rate)}</span>
           </div>
 
           <div className="single-car-page__badges-row">
-            <span className={`single-car-page__source single-car-page__source--${car.source}`}>
-              {car.source === 'api' ? 'API Stock' : 'In-House Stock'}
-            </span>
             <span className={`single-car-page__vehicle-type single-car-page__vehicle-type--${vehicleType.toLowerCase()}`}>
               {vehicleType === 'EV' && <Zap size={11} />}
               {vehicleType}
@@ -232,12 +229,11 @@ export default function SingleCarPage() {
               <tr><td>Make</td><td>{car.make}</td></tr>
               <tr><td>Model</td><td>{car.model}</td></tr>
               <tr><td>Year</td><td>{car.year}</td></tr>
-              <tr><td>Price (FOB)</td><td>{formatPrice(car.price)}</td></tr>
+              <tr><td>Price (FOB)</td><td>{formatPrice(car.price, rate)}</td></tr>
               {specs.map((spec) => (
                 <tr key={spec.key}><td>{spec.label}</td><td>{spec.value}</td></tr>
               ))}
               <tr><td>Stock ID</td><td>{stockId}</td></tr>
-              <tr><td>Source</td><td>{car.source === 'api' ? 'API Stock' : 'In-House Stock'}</td></tr>
             </tbody>
           </table>
         </div>

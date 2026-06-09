@@ -8,6 +8,8 @@ import CTABanner from '../components/CTABanner';
 import Loading from '../components/Loading';
 import ErrorState from '../components/ErrorState';
 import { useApi } from '../hooks/useApi';
+import { useExchangeRate } from '../hooks/useExchangeRate';
+import { jpyToUsd } from '../lib/currency';
 import { listCars } from '../api/cars';
 import './StockListPage.css';
 
@@ -21,14 +23,9 @@ const SORT_TO_API = {
   'mileage-low': 'mileage_asc',
 };
 
-const SOURCE_TO_API = {
-  All: 'all',
-  'API Stock': 'api',
-  'In-House': 'inhouse',
-};
-
 export default function StockListPage() {
   const [searchParams] = useSearchParams();
+  const { rate } = useExchangeRate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [viewMode, setViewMode] = useState('grid');
   const [sortBy, setSortBy] = useState('newest');
@@ -44,7 +41,6 @@ export default function StockListPage() {
     bodyTypes: searchParams.get('bodyType') ? [searchParams.get('bodyType')] : [],
     transmission: searchParams.get('transmission') || 'All',
     fuelTypes: [],
-    sourceFilter: 'All',
   };
 
   const [filters, setFilters] = useState(initialFilters);
@@ -63,12 +59,15 @@ export default function StockListPage() {
     if (appliedFilters.fuelTypes && appliedFilters.fuelTypes.length === 1) out.fuel = appliedFilters.fuelTypes[0];
     if (appliedFilters.yearFrom) out.year_from = appliedFilters.yearFrom;
     if (appliedFilters.yearTo) out.year_to = appliedFilters.yearTo;
-    if (appliedFilters.priceMin) out.price_min = appliedFilters.priceMin;
-    if (appliedFilters.priceMax) out.price_max = appliedFilters.priceMax;
-    const apiSource = SOURCE_TO_API[appliedFilters.sourceFilter] || 'all';
-    if (apiSource !== 'all') out.source = apiSource;
+    // Price inputs are in Yen; the API filters the USD-valued column, so convert
+    // with the live rate. Skip until the rate is known to avoid sending a wrong
+    // bound. floor/ceil keep the Yen range inclusive after rounding.
+    if (rate) {
+      if (appliedFilters.priceMin) out.price_min = Math.floor(jpyToUsd(Number(appliedFilters.priceMin), rate));
+      if (appliedFilters.priceMax) out.price_max = Math.ceil(jpyToUsd(Number(appliedFilters.priceMax), rate));
+    }
     return out;
-  }, [appliedFilters, sortBy, page]);
+  }, [appliedFilters, sortBy, page, rate]);
 
   const { data, loading, error, refetch } = useApi(
     (signal) => listCars(apiParams, { signal }),
@@ -114,7 +113,6 @@ export default function StockListPage() {
       bodyTypes: [],
       transmission: 'All',
       fuelTypes: [],
-      sourceFilter: 'All',
     };
     setFilters(cleared);
     setAppliedFilters(cleared);

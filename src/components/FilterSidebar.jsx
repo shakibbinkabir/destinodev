@@ -60,18 +60,6 @@ export default function FilterSidebar({ filters, setFilters, onApply, onClear, i
             />
           </div>
 
-          <div className="filter-sidebar__source-toggle">
-            {['All', 'API Stock', 'In-House'].map((s) => (
-              <button
-                key={s}
-                className={`filter-sidebar__source-btn${(filters.sourceFilter || 'All') === s ? ' filter-sidebar__source-btn--active' : ''}`}
-                onClick={() => setFilters({ ...filters, sourceFilter: s })}
-              >
-                {s}
-              </button>
-            ))}
-          </div>
-
           <div className="filter-sidebar__group">
             <button className="filter-sidebar__group-header" onClick={() => toggleSection('make')}>
               <span>Make</span>
@@ -124,7 +112,7 @@ export default function FilterSidebar({ filters, setFilters, onApply, onClear, i
 
           <div className="filter-sidebar__group">
             <button className="filter-sidebar__group-header" onClick={() => toggleSection('price')}>
-              <span>Price Range (USD)</span>
+              <span>Price Range (¥)</span>
               {openSections.price ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
             </button>
             {openSections.price && (

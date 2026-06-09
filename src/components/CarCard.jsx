@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom';
 import { Fuel, Gauge, Settings } from 'lucide-react';
+import { useExchangeRate } from '../hooks/useExchangeRate';
+import { formatPrice } from '../lib/currency';
 import './CarCard.css';
 
 export default function CarCard({ car }) {
-  const formatPrice = (price) =>
-    new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(price);
+  const { rate } = useExchangeRate();
 
   return (
     <Link to={`/stock/${car.id}`} className="car-card">
@@ -17,9 +18,6 @@ export default function CarCard({ car }) {
             {car.badge}
           </span>
         )}
-        <span className={`car-card__source car-card__source--${car.source}`}>
-          {car.source === 'api' ? 'API Stock' : 'In-House'}
-        </span>
       </div>
 
       <div className="car-card__body">
@@ -46,7 +44,7 @@ export default function CarCard({ car }) {
         <div className="car-card__footer">
           <div className="car-card__price-group">
             <span className="car-card__fob">FOB Japan</span>
-            <span className="car-card__price">{formatPrice(car.price)}</span>
+            <span className="car-card__price">{formatPrice(car.price, rate)}</span>
           </div>
           <span className="car-card__view">View Details</span>
         </div>
