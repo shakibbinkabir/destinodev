@@ -36,7 +36,11 @@ return [
     ],
 
     'exchange_rate' => [
-        'key' => env('EXCHANGE_RATE_API_KEY'),
+        // USD→JPY is sourced by scraping MUFG Bank's published TT rates and
+        // applying `rate = USD T.T.B. - offset` (client requirement; deviates
+        // from PRD §6.4.4 — see App\Services\ExchangeRateService docblock).
+        'mufg_url' => env('EXCHANGE_RATE_MUFG_URL', 'https://www.bk.mufg.jp/ippan/kinri/list_j/kinri/kawase.html'),
+        'ttb_offset' => (float) env('EXCHANGE_RATE_TTB_OFFSET', 4),
     ],
 
     'youtube' => [
