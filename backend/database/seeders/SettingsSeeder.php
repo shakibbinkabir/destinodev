@@ -61,5 +61,9 @@ class SettingsSeeder extends Seeder
                 ],
             );
         }
+
+        // Prune retired keys so they stop leaking into the public /settings
+        // response on already-seeded installs.
+        Setting::whereIn('key', ['company.jumvea_member'])->delete();
     }
 }
