@@ -80,6 +80,20 @@ Assumed transport: bearer-token auth in the `Authorization` header (`Http::withT
 
 **RESOLVED 2026-05-20.** Vendor delivered `JDM One Price API Doc.pdf` plus three reference SQL dumps (maker / car_model / chassis_code). The real surface is two GET endpoints under `https://jdmauction.live/oneprice/api/` — `search-auction` and `lot-detail` — authed with two custom headers, `username` + `api-key` (NOT bearer). Search is per-(maker, model) only; there is no "fetch all" call, so `OnePriceStockService::iterateLots()` walks the vendor's pagination envelope (`auctionData[]`, `totalPages`, `currentPage` 0-indexed) for one pair at a time, and `StockSync` iterates an env allowlist `ONE_PRICE_STOCK_MAKERS` (CSV of maker.company_id values) crossed with each maker's distinct `model_name_ref` list. Reference data lives at `database/data/oneprice/{makers,car-models,chassis-codes}.json` (regenerate via `php scripts/build-oneprice-lookups.php` whenever the vendor updates the dumps). Sold-marking is scoped to the (make, model) pairs visited in the current run so partial syncs cannot mark unrelated catalog rows as sold. Two columns added to `cars` in migration `2026_05_20_120000_add_oneprice_provenance_to_cars`: `lot_bid` (required by lot-detail), `chassis_code`, `auction_house`, `auction_grade`. CLI overrides for ad-hoc fetches: `--maker=`, `--model=`, `--max-pages=`, `--dry-run`. Live sync confirmed `2026-05-20`: `php artisan stock:sync --maker=9 --model=718 --max-pages=1` ingested 50 Toyota Prius lots correctly normalized (1.8L hybrid, ZVW50/ZVW51 chassis, Ippatsu Stock provenance, 3 images each).
 
+## 2026-06-10 — Exchange-rate source switched to MUFG (PRD §6.4.4 deviation)
+**Stage:** post-launch change request
+**Owner:** Client (decision) / dev (implementation, done)
+**What changed:** Per client instruction, USD→JPY is now scraped from MUFG Bank's published TT-rate page (`EXCHANGE_RATE_MUFG_URL`) and computed as `rate = USD T.T.B. − EXCHANGE_RATE_TTB_OFFSET` (offset default ¥4), refreshed every 3 hours by the `exchange-rate:sync` scheduled command. This replaces the PRD §6.4.4 design (exchangerate-api.com, 12 h cache, `EXCHANGE_RATE_API_KEY`). The `/api/v1/exchange-rate` response shape and the cache/stale-fallback contract are unchanged.
+**Risk / impact:**
+- **Scraping fragility.** A MUFG layout change or bot-block would break `ExchangeRateService::parse()`. Mitigated by the last-known stale fallback (the public endpoint keeps serving the previous rate) and the ability to re-run `php artisan exchange-rate:sync` after a fix. `parse()` is unit-tested and reads the T.T.B. column positionally so dash-padded rows don't misalign.
+- **Unconfirmed windows.** MUFG publishes `----` for USD outside its update windows (nights/weekends). `parse()` throws on `----`, so the rate simply stays at last-known until the next confirmed publication — by design, not an error.
+
+## 2026-06-10 — Car prices are USD; verify legacy in-house rows
+**Stage:** post-launch change request
+**Owner:** Client / operator
+**What we need:** A review of every **in-house** car's price. The `cars.price_jpy` column actually stores the **USD** base price (the One-Price sync writes USD `startPriceNum`; the customer Yen price is now computed client-side from the MUFG rate). The Filament field was previously mislabelled "Price (JPY) ¥" and is now "Price (USD) $". Any in-house car whose price was typed as **yen** under the old label will display as a wildly inflated Yen amount after conversion.
+**Impact if not resolved:** Affected in-house listings show incorrect (huge) prices. No automatic conversion was applied — we can't reliably tell which rows were entered in yen vs USD. API-source rows are unaffected (always USD). Column not renamed to `price_usd` to avoid a data migration; the misnomer is documented in `CarResource` and `ExchangeRateService`.
+
 ## 2026-05-09 — AuctionPage final disposition
 **Stage:** 5
 **Owner:** Client
