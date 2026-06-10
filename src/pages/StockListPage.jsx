@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { SlidersHorizontal, LayoutGrid, List, ChevronLeft, ChevronRight } from 'lucide-react';
 import PageTitle from '../components/PageTitle';
 import FilterSidebar from '../components/FilterSidebar';
+import BrandGrid from '../components/BrandGrid';
 import CarCard from '../components/CarCard';
 import CTABanner from '../components/CTABanner';
 import Loading from '../components/Loading';
@@ -102,6 +103,19 @@ export default function StockListPage() {
     setSidebarOpen(false);
   };
 
+  // Brand grid selection: apply a single make immediately and keep the sidebar
+  // Make checkboxes in sync (both read filters.makes).
+  const handleSelectBrand = (make) => {
+    const next = { ...filters, makes: [make] };
+    setFilters(next);
+    setAppliedFilters(next);
+    setPage(1);
+  };
+
+  const selectedMake = appliedFilters.makes && appliedFilters.makes.length === 1
+    ? appliedFilters.makes[0]
+    : '';
+
   const handleClear = () => {
     const cleared = {
       search: '',
@@ -137,6 +151,17 @@ export default function StockListPage() {
         />
 
         <div className="stock-page__results">
+          <div className="stock-page__brands">
+            <BrandGrid
+              collapsible
+              defaultOpen={false}
+              showHeader
+              title="Browse by Brand"
+              selectedMake={selectedMake}
+              onSelectMake={handleSelectBrand}
+            />
+          </div>
+
           <div className="stock-page__toolbar">
             <div className="stock-page__toolbar-left">
               <button

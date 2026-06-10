@@ -8,6 +8,7 @@ import ProcessSteps from '../components/ProcessSteps';
 import TestimonialSlider from '../components/TestimonialSlider';
 import CTABanner from '../components/CTABanner';
 import Partners from '../components/Partners';
+import BrandGrid from '../components/BrandGrid';
 import FacebookFeed from '../components/FacebookFeed';
 import InstagramFeed from '../components/InstagramFeed';
 import Loading from '../components/Loading';
@@ -196,6 +197,18 @@ export default function HomePage() {
             </p>
           </div>
           <ProcessSteps />
+        </div>
+      </section>
+
+      <section className="section section--white">
+        <div className="wrap">
+          <div className="text-center" style={{ marginBottom: 'var(--space-xl)' }}>
+            <h2>Browse by Brand</h2>
+            <p style={{ maxWidth: 520, margin: '8px auto 0', color: '#777', fontWeight: 300 }}>
+              Explore our stock by manufacturer, grouped by country of origin.
+            </p>
+          </div>
+          <BrandGrid showHeader={false} />
         </div>
       </section>
 

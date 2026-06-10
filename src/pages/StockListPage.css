@@ -9,6 +9,10 @@
   min-width: 0;
 }
 
+.stock-page__brands {
+  margin-bottom: var(--space-lg);
+}
+
 .stock-page__toolbar {
   display: flex;
   align-items: center;
