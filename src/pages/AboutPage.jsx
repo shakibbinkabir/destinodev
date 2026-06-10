@@ -28,6 +28,9 @@ export default function AboutPage() {
 
   const services = servicesQuery.data || [];
 
+  const FALLBACK_STORY_IMAGE = 'https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=800&h=600&fit=crop';
+  const storyImage = pageQuery.data?.image || FALLBACK_STORY_IMAGE;
+
   return (
     <div className="about-page">
       <PageTitle
@@ -41,7 +44,7 @@ export default function AboutPage() {
             <div className="about-page__story-image">
               <div className="about-page__story-ratio">
                 <img
-                  src="https://images.unsplash.com/photo-1568605117036-5fe5e7bab0b7?w=800&h=600&fit=crop"
+                  src={storyImage}
                   alt="Destino showroom"
                 />
               </div>

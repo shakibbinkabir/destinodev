@@ -61,6 +61,18 @@ class PageContentResource extends Resource
                         ->acceptedFileTypes(['application/pdf'])
                         ->helperText('Uploaded once. The public /api/v1/shipping-pdf endpoint redirects to the file.'),
                 ]),
+
+            Forms\Components\Section::make('About image')
+                ->visible(fn (Get $get) => $get('slug') === 'about')
+                ->schema([
+                    Forms\Components\FileUpload::make('extras.about_image_path')
+                        ->label('About image')
+                        ->image()
+                        ->disk('public')
+                        ->directory('about')
+                        ->imageEditor()
+                        ->helperText('Shown beside the About story on the public site. Leave empty to use the default image.'),
+                ]),
         ]);
     }
 
