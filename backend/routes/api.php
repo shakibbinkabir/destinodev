@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\V1\ReviewsController;
 use App\Http\Controllers\Api\V1\ServicesController;
 use App\Http\Controllers\Api\V1\SettingsController;
 use App\Http\Controllers\Api\V1\ShippingPdfController;
+use App\Http\Controllers\Api\V1\ShippingScheduleController;
 use App\Http\Controllers\Api\V1\TestimonialsController;
 use App\Http\Controllers\Api\V1\YoutubeFeedController;
 use Illuminate\Support\Facades\Route;
@@ -57,6 +58,7 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function (): void {
     Route::get('/exchange-rate', ExchangeRateController::class);
     Route::get('/youtube-feed', YoutubeFeedController::class);
     Route::get('/shipping-pdf', ShippingPdfController::class);
+    Route::get('/shipping-schedule', ShippingScheduleController::class);
 });
 
 // Public writes — stricter throttles per PRD §3.2 of Stage 3 task list.

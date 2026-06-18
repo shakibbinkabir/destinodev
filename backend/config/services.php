@@ -51,6 +51,14 @@ return [
         'channel_id' => env('YOUTUBE_CHANNEL_ID', 'UC9r_ugFs9RL4OkeEAwztQ7g'),
     ],
 
+    'shipping_schedule' => [
+        // RoRo vessel schedule directory (region → carrier → outbound SCHEDULE
+        // / NEWS links). The page is a static HTML table maintained by a third
+        // party; App\Services\ShippingScheduleService scrapes + caches it and
+        // falls back to the last-known value on upstream failure.
+        'source_url' => env('SHIPPING_SCHEDULE_URL', 'https://planetcars.jp/index.php/en/shipping-schedule-en/roro-vessel'),
+    ],
+
     'one_price_stock' => [
         'base_url' => env('ONE_PRICE_STOCK_API_URL', 'https://jdmauction.live/oneprice/api'),
         'username' => env('ONE_PRICE_STOCK_API_USERNAME'),
