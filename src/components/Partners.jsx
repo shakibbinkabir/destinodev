@@ -34,8 +34,13 @@ export default function Partners() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <img src={partner.logo || '/logo-link.png'} alt={partner.name} loading="lazy" />
-              <span className="partners__name">{partner.name}</span>
+              <div className="partners__thumb">
+                <img src={partner.logo || '/logo-link.png'} alt={partner.name} loading="lazy" />
+              </div>
+              <div className="partners__caption">
+                <span className="partners__name">{partner.name}</span>
+                <span className="partners__arrow" aria-hidden="true">›</span>
+              </div>
             </a>
           ))}
         </div>
