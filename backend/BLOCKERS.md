@@ -26,11 +26,12 @@ Format per entry:
 **What we need:** Final marketing copy for the about / shipping / contact pages. We seeded what exists in `src/pages/AboutPage.jsx` plus a short shipping summary and a placeholder for contact, but the React About/Contact pages also rely on dynamic settings (`company.address`, `phone`, etc.) for the bulk of their content. The shipping page in particular is presently a PDF iframe + link cards; the markdown body we seeded is a fallback.
 **Impact if not resolved:** Public pages will read the seeded text. It is on-brand and accurate, but not necessarily what the client wants to ship in production.
 
-## 2026-05-09 — Real partner logos
+## 2026-05-09 — Real partner logos — RESOLVED 2026-06-18
 **Stage:** 2
 **Owner:** Client
 **What we need:** Logo files (SVG or high-res PNG) and final URLs for the 10 partners listed in `src/components/Partners.jsx`. Currently every partner row points to `/logo-link.png` (the DESTINO logo placeholder).
 **Impact if not resolved:** The partners strip on the homepage and About page renders the same DESTINO logo for every entry. This is a UX bug visible to every site visitor, but not a blocker for the data pipeline.
+**Resolution:** Client supplied logo links for 9 partners and asked to drop "Fekema" (an unidentifiable entry). Logos are downloaded and self-hosted in the frontend at `public/partners/` (caterham, lotus, morgan, yokohama, caterpillar, jumvea, uss, aucnet, mkseiko); `PartnersSeeder` points each `logo_path` at `https://destinocojp.com/partners/<file>` and deletes the Fekema row. The card grid CSS was switched to `object-fit: contain` on white so logos display centred rather than cropped. Requires `php artisan db:seed --class=PartnersSeeder` on prod to take effect (the deploy webhook skips seeds).
 
 ## 2026-05-09 — Real social media URLs
 **Stage:** 2
