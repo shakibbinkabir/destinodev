@@ -63,3 +63,12 @@ export async function getYouTubeFeed(options) {
 export function getShippingPdfUrl() {
   return `${apiBaseUrl()}/shipping-pdf`;
 }
+
+export async function getShippingSchedule(options) {
+  const payload = await apiGet('/shipping-schedule', undefined, options);
+  return {
+    regions: payload?.data || [],
+    stale: !!payload?.meta?.stale,
+    fetchedAt: payload?.meta?.fetched_at || null,
+  };
+}

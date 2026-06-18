@@ -18,17 +18,136 @@
   gap: var(--space-sm);
 }
 
-.shipping-page__viewer {
-  border: 1px solid var(--border);
+/* ---- RoRo schedule directory ---- */
+.shipping-page__schedule {
   margin-bottom: var(--space-xl);
+}
+
+.shipping-page__schedule-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-lg);
+}
+
+.shipping-page__schedule-head h3 {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin: 0;
+}
+
+.shipping-page__schedule-head h3 svg {
+  color: var(--cyan);
+}
+
+.shipping-page__stale {
+  font-size: 12px;
+  font-weight: 500;
+  color: #8a6d00;
+  background-color: #fff6da;
+  border: 1px solid #f0d98a;
+  border-radius: 999px;
+  padding: 4px 12px;
+}
+
+.shipping-page__regions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-lg);
+}
+
+.shipping-page__region {
+  border: 1px solid var(--border);
   background-color: var(--light);
 }
 
-.shipping-page__iframe {
-  display: block;
-  width: 100%;
-  height: 700px;
-  border: none;
+.shipping-page__region-name {
+  margin: 0;
+  padding: var(--space-md) var(--space-lg);
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #fff;
+  background-color: var(--black);
+}
+
+.shipping-page__carriers {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.shipping-page__carrier {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--space-lg);
+  border-top: 1px solid var(--border);
+}
+
+.shipping-page__carrier:first-child {
+  border-top: none;
+}
+
+.shipping-page__carrier-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--black);
+}
+
+.shipping-page__carrier-links {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  flex-shrink: 0;
+}
+
+.shipping-page__pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  padding: 5px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--cyan);
+  color: var(--cyan);
+  background-color: transparent;
+  transition: background-color var(--transition), color var(--transition);
+}
+
+.shipping-page__pill:hover {
+  background-color: var(--cyan);
+  color: #fff;
+}
+
+.shipping-page__pill--ghost {
+  border-color: var(--border);
+  color: #777;
+}
+
+.shipping-page__pill--ghost:hover {
+  background-color: #777;
+  border-color: #777;
+  color: #fff;
+}
+
+.shipping-page__pill--muted {
+  border-style: dashed;
+  border-color: var(--border);
+  color: #aaa;
+  cursor: default;
+}
+
+.shipping-page__pill--muted:hover {
+  background-color: transparent;
+  color: #aaa;
 }
 
 .shipping-page__fallback {
@@ -38,6 +157,8 @@
   justify-content: center;
   gap: var(--space-md);
   padding: var(--space-2xl);
+  border: 1px solid var(--border);
+  background-color: var(--light);
   color: var(--muted);
 }
 
@@ -99,11 +220,17 @@
 }
 
 @media (max-width: 768px) {
+  .shipping-page__regions {
+    grid-template-columns: 1fr;
+  }
+
   .shipping-page__links-grid {
     grid-template-columns: 1fr;
   }
 
-  .shipping-page__iframe {
-    height: 400px;
+  .shipping-page__carrier {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-sm);
   }
 }
