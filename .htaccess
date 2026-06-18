@@ -1,0 +1,12 @@
+# SPA routing for the React app on the apex domain (destinocojp.com).
+# Vite copies this file from public/ into dist/ at build time, so it ships
+# as part of the ui-build branch and lands in the apex docroot on every
+# deploy. Without it, refreshing on /stock, /contact, etc. would 404
+# because Apache would look for a real file at that path.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>
