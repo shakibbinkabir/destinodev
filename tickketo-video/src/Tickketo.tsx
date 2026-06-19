@@ -1,11 +1,6 @@
 import React from "react";
-import { AbsoluteFill } from "remotion";
-import {
-  TransitionSeries,
-  linearTiming,
-  springTiming,
-} from "@remotion/transitions";
-import { fade } from "@remotion/transitions/fade";
+import { AbsoluteFill, Audio, staticFile } from "remotion";
+import { TransitionSeries, springTiming } from "@remotion/transitions";
 import { slide } from "@remotion/transitions/slide";
 import { wipe } from "@remotion/transitions/wipe";
 
@@ -31,14 +26,15 @@ export const TOTAL_FRAMES =
 export const Tickketo: React.FC = () => {
   return (
     <AbsoluteFill style={{ backgroundColor: COLORS.ink, fontFamily: `"${TICKKETO_FONT}", ${FONT_STACK}` }}>
+      <Audio src={staticFile("audio/soundtrack.wav")} />
       <TransitionSeries>
         <TransitionSeries.Sequence durationInFrames={SCENES.intro}>
           <Scene01Intro />
         </TransitionSeries.Sequence>
 
         <TransitionSeries.Transition
-          presentation={fade()}
-          timing={linearTiming({ durationInFrames: TRANSITION })}
+          presentation={slide({ direction: "from-bottom" })}
+          timing={springTiming({ config: { damping: 200 }, durationInFrames: TRANSITION })}
         />
 
         <TransitionSeries.Sequence durationInFrames={SCENES.concert}>
