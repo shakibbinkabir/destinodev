@@ -12,23 +12,21 @@ import { wipe } from "@remotion/transitions/wipe";
 import { COLORS, FONT_STACK } from "./theme";
 import { TICKKETO_FONT } from "./loadFonts";
 import { Scene01Intro } from "./scenes/Scene01Intro";
-import { Scene02Tagline } from "./scenes/Scene02Tagline";
+import { Scene02Concert } from "./scenes/Scene02Concert";
 import { Scene03Flow } from "./scenes/Scene03Flow";
-import { Scene04Stats } from "./scenes/Scene04Stats";
-import { Scene05CTA } from "./scenes/Scene05CTA";
+import { Scene04ComingSoon } from "./scenes/Scene04ComingSoon";
 
-// Scene lengths (frames @30fps). Net duration = sum - sum(transitions=14*4).
+// Scene lengths (frames @30fps). Net duration = sum - sum(transitions).
 export const SCENES = {
   intro: 78,
-  tagline: 84,
-  flow: 168,
-  stats: 96,
-  cta: 80,
+  concert: 132,
+  flow: 202,
+  comingSoon: 120,
 } as const;
-export const TRANSITION = 14;
+export const TRANSITION = 16;
 export const TOTAL_FRAMES =
-  SCENES.intro + SCENES.tagline + SCENES.flow + SCENES.stats + SCENES.cta -
-  TRANSITION * 4; // = 450
+  SCENES.intro + SCENES.concert + SCENES.flow + SCENES.comingSoon -
+  TRANSITION * 3;
 
 export const Tickketo: React.FC = () => {
   return (
@@ -43,12 +41,12 @@ export const Tickketo: React.FC = () => {
           timing={linearTiming({ durationInFrames: TRANSITION })}
         />
 
-        <TransitionSeries.Sequence durationInFrames={SCENES.tagline}>
-          <Scene02Tagline />
+        <TransitionSeries.Sequence durationInFrames={SCENES.concert}>
+          <Scene02Concert />
         </TransitionSeries.Sequence>
 
         <TransitionSeries.Transition
-          presentation={wipe({ direction: "from-bottom" })}
+          presentation={slide({ direction: "from-right" })}
           timing={springTiming({ config: { damping: 200 }, durationInFrames: TRANSITION })}
         />
 
@@ -57,21 +55,12 @@ export const Tickketo: React.FC = () => {
         </TransitionSeries.Sequence>
 
         <TransitionSeries.Transition
-          presentation={slide({ direction: "from-right" })}
-          timing={springTiming({ config: { damping: 200 }, durationInFrames: TRANSITION })}
-        />
-
-        <TransitionSeries.Sequence durationInFrames={SCENES.stats}>
-          <Scene04Stats />
-        </TransitionSeries.Sequence>
-
-        <TransitionSeries.Transition
           presentation={wipe({ direction: "from-bottom" })}
           timing={springTiming({ config: { damping: 200 }, durationInFrames: TRANSITION })}
         />
 
-        <TransitionSeries.Sequence durationInFrames={SCENES.cta}>
-          <Scene05CTA />
+        <TransitionSeries.Sequence durationInFrames={SCENES.comingSoon}>
+          <Scene04ComingSoon />
         </TransitionSeries.Sequence>
       </TransitionSeries>
     </AbsoluteFill>

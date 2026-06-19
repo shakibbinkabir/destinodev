@@ -6,37 +6,25 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
-import { InkBackground } from "../components/Background";
+import { InkBackground, FloatShape } from "../components/Background";
 import { LogoMark } from "../components/Brand";
+import { ConfettiBurst } from "../components/Confetti";
 import { COLORS, gradientText } from "../theme";
 
 export const Scene01Intro: React.FC = () => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+  const { fps, width, height } = useVideoConfig();
 
-  const pop = spring({ frame, fps, config: { damping: 13, mass: 0.8 } });
-  const markScale = interpolate(pop, [0, 1], [0.4, 1]);
-  const draw = interpolate(frame, [8, 34], [0, 1], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+  // bouncy overshoot pop for the logo mark
+  const pop = spring({ frame, fps, config: { damping: 9, mass: 0.9, stiffness: 120 } });
+  const markScale = interpolate(pop, [0, 1], [0.2, 1]);
+  const wobble = Math.sin(frame / 7) * interpolate(frame, [10, 40], [3, 0], { extrapolateRight: "clamp", extrapolateLeft: "clamp" });
+  const draw = interpolate(frame, [10, 32], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
 
-  const wordY = interpolate(frame, [16, 40], [120, 0], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-  const wordClip = interpolate(frame, [16, 42], [100, 0], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
+  const wordPop = spring({ frame: frame - 16, fps, config: { damping: 11, mass: 0.8 } });
+  const wordScale = interpolate(wordPop, [0, 1], [0.6, 1]);
 
-  const metaOpacity = interpolate(frame, [44, 56, 70, 78], [0, 1, 1, 0], {
-    extrapolateLeft: "clamp",
-    extrapolateRight: "clamp",
-  });
-
-  // light sweep across the wordmark
-  const sweep = interpolate(frame, [40, 66], [-120, 220], {
+  const metaOpacity = interpolate(frame, [40, 52, 66, 78], [0, 1, 1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -44,48 +32,31 @@ export const Scene01Intro: React.FC = () => {
   return (
     <AbsoluteFill>
       <InkBackground />
-      <AbsoluteFill
-        style={{
-          alignItems: "center",
-          justifyContent: "center",
-          flexDirection: "column",
-          gap: 40,
-        }}
-      >
-        <div style={{ transform: `scale(${markScale})` }}>
+
+      {/* playful orbiting shapes */}
+      <FloatShape kind="star" x="22%" y="24%" size={70} delay={6} />
+      <FloatShape kind="ring" x="76%" y="30%" size={64} delay={2} />
+      <FloatShape kind="blob" x="74%" y="68%" size={78} delay={10} spin />
+      <FloatShape kind="ticket" x="20%" y="70%" size={84} delay={4} />
+
+      <ConfettiBurst start={14} count={46} originX={0.5} originY={0.42} power={1.15} width={width} height={height} />
+
+      <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 44 }}>
+        <div style={{ transform: `scale(${markScale}) rotate(${wobble}deg)` }}>
           <LogoMark width={300} gradientId="intro" drawProgress={draw} />
         </div>
 
-        <div style={{ overflow: "hidden", height: 150 }}>
-          <div
-            style={{
-              position: "relative",
-              transform: `translateY(${wordY}px)`,
-              clipPath: `inset(0 0 ${wordClip}% 0)`,
-            }}
-          >
-            <div
-              style={{
-                fontSize: 124,
-                fontWeight: 800,
-                letterSpacing: "-0.01em",
-                lineHeight: 1,
-                ...gradientText(),
-              }}
-            >
-              Tickketo
-            </div>
-            <div
-              style={{
-                position: "absolute",
-                inset: 0,
-                background:
-                  "linear-gradient(115deg, transparent 35%, rgba(255,255,255,.55) 50%, transparent 65%)",
-                transform: `translateX(${sweep}%)`,
-                mixBlendMode: "overlay",
-              }}
-            />
-          </div>
+        <div
+          style={{
+            transform: `scale(${wordScale})`,
+            fontSize: 124,
+            fontWeight: 800,
+            letterSpacing: "-0.01em",
+            lineHeight: 1,
+            ...gradientText(),
+          }}
+        >
+          Tickketo
         </div>
 
         <div
@@ -97,7 +68,7 @@ export const Scene01Intro: React.FC = () => {
             textTransform: "uppercase",
           }}
         >
-          Doors opening…
+          Something fun is coming
         </div>
       </AbsoluteFill>
     </AbsoluteFill>
