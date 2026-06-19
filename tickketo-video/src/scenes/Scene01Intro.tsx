@@ -1,76 +1,111 @@
 import React from "react";
 import {
   AbsoluteFill,
+  Easing,
   interpolate,
-  spring,
   useCurrentFrame,
-  useVideoConfig,
 } from "remotion";
-import { InkBackground, FloatShape } from "../components/Background";
 import { LogoMark } from "../components/Brand";
-import { ConfettiBurst } from "../components/Confetti";
-import { COLORS, gradientText } from "../theme";
+import { COLORS } from "../theme";
 
+/**
+ * Faithful recreation of the Tickketo website loading screen:
+ * horizontal [logo mark] + white "Tickketo" wordmark, a crimson progress
+ * line that fills, then "DOORS OPENING…". Pure black — no confetti/grid.
+ * (See `.loader__logo` / `.loader__bar` / `.loader__meta` in the site CSS.)
+ */
 export const Scene01Intro: React.FC = () => {
   const frame = useCurrentFrame();
-  const { fps, width, height } = useVideoConfig();
+  const ease = Easing.bezier(0.22, 1, 0.36, 1);
 
-  // bouncy overshoot pop for the logo mark
-  const pop = spring({ frame, fps, config: { damping: 9, mass: 0.9, stiffness: 120 } });
-  const markScale = interpolate(pop, [0, 1], [0.2, 1]);
-  const wobble = Math.sin(frame / 7) * interpolate(frame, [10, 40], [3, 0], { extrapolateRight: "clamp", extrapolateLeft: "clamp" });
-  const draw = interpolate(frame, [10, 32], [0, 1], { extrapolateLeft: "clamp", extrapolateRight: "clamp" });
+  // loader__logo fades + lifts in as one unit
+  const logoOpacity = interpolate(frame, [2, 20], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: ease,
+  });
+  const logoY = interpolate(frame, [2, 20], [22, 0], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: ease,
+  });
 
-  const wordPop = spring({ frame: frame - 16, fps, config: { damping: 11, mass: 0.8 } });
-  const wordScale = interpolate(wordPop, [0, 1], [0.6, 1]);
+  // bar track appears with the logo; crimson fill sweeps 0 -> 100%
+  const trackOpacity = interpolate(frame, [8, 18], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+  const fill = interpolate(frame, [12, 60], [0, 100], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: ease,
+  });
 
-  const metaOpacity = interpolate(frame, [40, 52, 66, 78], [0, 1, 1, 0], {
+  const metaOpacity = interpolate(frame, [20, 34], [0, 1], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
   return (
-    <AbsoluteFill>
-      <InkBackground />
-
-      {/* playful orbiting shapes */}
-      <FloatShape kind="star" x="22%" y="24%" size={70} delay={6} />
-      <FloatShape kind="ring" x="76%" y="30%" size={64} delay={2} />
-      <FloatShape kind="blob" x="74%" y="68%" size={78} delay={10} spin />
-      <FloatShape kind="ticket" x="20%" y="70%" size={84} delay={4} />
-
-      <ConfettiBurst start={14} count={46} originX={0.5} originY={0.42} power={1.15} width={width} height={height} />
-
-      <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", flexDirection: "column", gap: 44 }}>
-        <div style={{ transform: `scale(${markScale}) rotate(${wobble}deg)` }}>
-          <LogoMark width={300} gradientId="intro" drawProgress={draw} />
-        </div>
-
+    <AbsoluteFill
+      style={{
+        backgroundColor: COLORS.ink,
+        alignItems: "center",
+        justifyContent: "center",
+        flexDirection: "column",
+        gap: 40,
+      }}
+    >
+      {/* loader__logo: mark + white wordmark, side by side */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 26,
+          opacity: logoOpacity,
+          transform: `translateY(${logoY}px)`,
+        }}
+      >
+        <LogoMark width={216} gradientId="loader" />
         <div
           style={{
-            transform: `scale(${wordScale})`,
-            fontSize: 124,
-            fontWeight: 800,
-            letterSpacing: "-0.01em",
+            fontSize: 108,
+            fontWeight: 700,
+            letterSpacing: "-0.02em",
+            color: COLORS.bone,
             lineHeight: 1,
-            ...gradientText(),
           }}
         >
           Tickketo
         </div>
+      </div>
 
-        <div
-          style={{
-            opacity: metaOpacity,
-            color: COLORS.mute,
-            fontSize: 22,
-            letterSpacing: ".34em",
-            textTransform: "uppercase",
-          }}
-        >
-          Something fun is coming
-        </div>
-      </AbsoluteFill>
+      {/* loader__bar */}
+      <div
+        style={{
+          width: 620,
+          height: 4,
+          borderRadius: 3,
+          background: "rgba(255,255,255,.16)",
+          overflow: "hidden",
+          opacity: trackOpacity,
+        }}
+      >
+        <div style={{ width: `${fill}%`, height: "100%", background: COLORS.crimson }} />
+      </div>
+
+      {/* loader__meta */}
+      <div
+        style={{
+          opacity: metaOpacity,
+          fontSize: 22,
+          letterSpacing: "0.32em",
+          textTransform: "uppercase",
+          color: COLORS.mute,
+        }}
+      >
+        Doors opening…
+      </div>
     </AbsoluteFill>
   );
 };

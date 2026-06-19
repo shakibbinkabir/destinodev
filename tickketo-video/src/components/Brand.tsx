@@ -8,9 +8,8 @@ import { COLORS } from "../theme";
 export const LogoMark: React.FC<{
   width?: number;
   gradientId?: string;
-  drawProgress?: number; // 0..1 for the perforation stroke draw-on
+  drawProgress?: number; // 0..1 fades the dotted perforation in
 }> = ({ width = 220, gradientId = "tkg", drawProgress = 1 }) => {
-  const dash = 36;
   return (
     <svg
       width={width}
@@ -30,17 +29,17 @@ export const LogoMark: React.FC<{
         fill={`url(#${gradientId})`}
         d="M3 0 H18 A4 4 0 0 0 26 0 H61 A3 3 0 0 1 64 3 V29 A3 3 0 0 1 61 32 H26 A4 4 0 0 0 18 32 H3 A3 3 0 0 1 0 29 V3 A3 3 0 0 1 3 0 Z"
       />
+      {/* dotted perforation — matches the site's stroke-dasharray "0.1 3" */}
       <line
         x1="22"
         y1="6"
         x2="22"
         y2="26"
-        stroke={COLORS.ink}
+        stroke={COLORS.crimson}
         strokeWidth="1.6"
-        strokeDasharray={`${dash}`}
-        strokeDashoffset={dash * (1 - drawProgress)}
+        strokeDasharray="0.1 3"
         strokeLinecap="round"
-        opacity={0.85}
+        opacity={0.7 * drawProgress}
       />
     </svg>
   );
