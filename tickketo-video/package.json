@@ -1,0 +1,26 @@
+{
+  "name": "tickketo-video",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Tickketo — vertical motion-graphics promo built with Remotion",
+  "scripts": {
+    "dev": "remotion studio",
+    "render": "remotion render Tickketo out/tickketo.mp4",
+    "upgrade": "remotion upgrade"
+  },
+  "dependencies": {
+    "@fontsource/inter": "^5.2.8",
+    "@remotion/fonts": "^4.0.481",
+    "@remotion/google-fonts": "4.0.481",
+    "@remotion/transitions": "4.0.481",
+    "@sparticuz/chromium": "^149.0.0",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "remotion": "4.0.481"
+  },
+  "devDependencies": {
+    "@remotion/cli": "4.0.481",
+    "@types/react": "19.2.2",
+    "typescript": "5.9.3"
+  }
+}
